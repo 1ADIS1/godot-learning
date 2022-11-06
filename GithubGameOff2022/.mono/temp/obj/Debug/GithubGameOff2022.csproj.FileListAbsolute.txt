@@ -1,0 +1,9 @@
+D:\GodotProjects\GithubGameOff2022\.mono\temp\bin\Debug\GithubGameOff2022.dll
+D:\GodotProjects\GithubGameOff2022\.mono\temp\bin\Debug\GithubGameOff2022.pdb
+D:\GodotProjects\GithubGameOff2022\.mono\temp\obj\Debug\GithubGameOff2022.csproj.AssemblyReference.cache
+D:\GodotProjects\GithubGameOff2022\.mono\temp\obj\Debug\GithubGameOff2022.GeneratedMSBuildEditorConfig.editorconfig
+D:\GodotProjects\GithubGameOff2022\.mono\temp\obj\Debug\GithubGameOff2022.AssemblyInfoInputs.cache
+D:\GodotProjects\GithubGameOff2022\.mono\temp\obj\Debug\GithubGameOff2022.AssemblyInfo.cs
+D:\GodotProjects\GithubGameOff2022\.mono\temp\obj\Debug\GithubGameOff2022.csproj.CoreCompileInputs.cache
+D:\GodotProjects\GithubGameOff2022\.mono\temp\obj\Debug\GithubGameOff2022.dll
+D:\GodotProjects\GithubGameOff2022\.mono\temp\obj\Debug\GithubGameOff2022.pdb
