@@ -1,17 +1,17 @@
 using Godot;
 using System;
 
-public class Cell : Sprite
+public enum CellType
 {
-    public Cell(Texture texture)
-    {
-        Texture = texture;
-        GD.Print("Instantiated cell with texture: {0}", texture);
-    }
+    EMPTY = 0,
 }
 
-enum RoomTypes
+public class Cell : Sprite
 {
-    CROSS_ROOM,
-    TUNNEL_ROOM,
+    [Export(PropertyHint.Flags, "Empty")] int CellType;
+
+    public Cell()
+    {
+        GD.Print("Instantiated cell with cell type: ", CellType);
+    }
 }

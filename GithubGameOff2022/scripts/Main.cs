@@ -10,9 +10,9 @@ public class Main : Node
     [Export]
     private int GridHeight = 9;
 
-    // TODO: Export array of textures.
+    // TODO: Export array of cells.
     [Export]
-    private Texture CrossRoom;
+    public PackedScene EmptyCell;
 
     private Grid _map;
 
@@ -20,7 +20,8 @@ public class Main : Node
 
     public override void _Ready()
     {
-        _map = new Grid(GridWidth, GridHeight, CrossRoom);
+        EmptyCell = GD.Load<PackedScene>("res://scenes/cells/EmptyCell.tscn");
+        _map = new Grid(GridWidth, GridHeight, EmptyCell.Instance());
 
         DrawStageMap();
     }
@@ -34,7 +35,7 @@ public class Main : Node
 
         for (int i = 0; i < _map.cells.Count; i++)
         {
-            // TODO: create several components in one object and instantiate it.
+            // TODO: Instantiate
             // AddChild(_map.cells[i]);
         }
     }
@@ -48,7 +49,7 @@ class Grid
     public ArrayList cells;
 
     // TODO: pass array of textures.
-    public Grid(int width, int height, Texture textures)
+    public Grid(int width, int height, Node emptyCell)
     {
         this.width = width;
         this.height = height;
@@ -59,10 +60,10 @@ class Grid
         {
             for (int y = 0; y < height; y++)
             {
-                Cell cell = new Cell(textures);
+                // TODO: make correct offset of empty cell in the world coordinates
                 Coordinate coordinate = new Coordinate(x, y);
 
-                cells.Insert(GetCoordinateToIndex(coordinate), cell);
+                cells.Insert(GetCoordinateToIndex(coordinate), emptyCell);
             }
         }
     }
