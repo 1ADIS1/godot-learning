@@ -10,9 +10,15 @@ public class Main : Node
     [Export]
     private int GridHeight = 9;
 
-    // TODO: Export array of cells.
+    // Offset of cell in the wolrd coordinates.
     [Export]
-    public PackedScene EmptyCell;
+    private int rowDrawStep = 16;
+    [Export]
+    private int columnDrawStep = 16;
+
+    // TODO: Export array of cells.
+    // [Export]
+    // public PackedScene EmptyCell;
 
     private Grid _map;
 
@@ -20,8 +26,8 @@ public class Main : Node
 
     public override void _Ready()
     {
-        EmptyCell = GD.Load<PackedScene>("res://scenes/cells/EmptyCell.tscn");
-        _map = new Grid(GridWidth, GridHeight, EmptyCell.Instance());
+        // EmptyCell = GD.Load<PackedScene>("res://scenes/cells/EmptyCell.tscn");
+        _map = new Grid(GridWidth, GridHeight);
 
         DrawStageMap();
     }
@@ -36,7 +42,12 @@ public class Main : Node
         for (int i = 0; i < _map.cells.Count; i++)
         {
             // TODO: Instantiate
-            // AddChild(_map.cells[i]);
+
+            // Position cell in the world coordinates.
+            var cell = _map.cells[i];
+            cell.Translate(new Vector2(cell.gridCoordinate.row * rowDrawStep,
+                cell.gridCoordinate.column * columnDrawStep));
+            AddChild(cell);
         }
     }
 }
@@ -46,42 +57,48 @@ class Grid
     public int width;
     public int height;
 
-    public ArrayList cells;
+    public List<Cell> cells;
 
-    // TODO: pass array of textures.
-    public Grid(int width, int height, Node emptyCell)
+    public Grid(int width, int height)
     {
         this.width = width;
         this.height = height;
 
-        cells = new ArrayList(width * height);
+        cells = new List<Cell>(width * height);
 
-        for (int x = 0; x < width; x++)
+        for (int row = 0; row < width; row++)
         {
-            for (int y = 0; y < height; y++)
+            for (int column = 0; column < height; column++)
             {
-                // TODO: make correct offset of empty cell in the world coordinates
-                Coordinate coordinate = new Coordinate(x, y);
+                Coordinate coordinate = new Coordinate(row, column);
+                Cell cell = new Cell(CellType.EMPTY, coordinate);
 
-                cells.Insert(GetCoordinateToIndex(coordinate), emptyCell);
+                cells.Insert(CoordinateToIndex(coordinate), cell);
             }
         }
     }
 
-    public int GetCoordinateToIndex(Coordinate coordinate)
+    // TODO: check correctness of calculations.
+    public int CoordinateToIndex(Coordinate coordinate)
     {
-        return 0;
+        return coordinate.column + coordinate.row * width;
+    }
+
+    // TODO: check correctness of calculations.
+    public Coordinate IndexToCoordinate(int index)
+    {
+        return new Coordinate(index / width, index % height);
     }
 }
 
-class Coordinate
+public class Coordinate
 {
-    int x;
-    int y;
+    public int row;
+    public int column;
 
-    public Coordinate(int x, int y)
+    public Coordinate(int row, int column)
     {
-        this.x = x;
-        this.y = y;
+        this.row = row;
+        this.column = column;
     }
 }
