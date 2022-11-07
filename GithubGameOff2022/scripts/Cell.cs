@@ -1,6 +1,7 @@
 using Godot;
 using System;
 
+// TODO: separate Cell and Sprite classes
 public class Cell : Sprite
 {
     // TODO: export enum
@@ -13,11 +14,13 @@ public class Cell : Sprite
     // Parameterless constructor for bloody C#
     public Cell()
     {
-
+        GD.Print("Constructor without parameters was called!");
     }
 
     public Cell(CellType cellType, Coordinate gridCoordinate)
     {
+        GD.Print("Constructor with parameters was called!");
+
         this.cellType = cellType;
         this.gridCoordinate = gridCoordinate;
 
@@ -27,7 +30,6 @@ public class Cell : Sprite
             case CellType.EMPTY:
                 Texture = EmptyCellTexture;
                 // Set transparency
-                // GD.Print("Instantiated empty cell!");
                 break;
             default:
                 Texture = EmptyCellTexture;

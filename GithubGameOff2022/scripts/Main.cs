@@ -12,13 +12,13 @@ public class Main : Node
 
     // Offset of cell in the wolrd coordinates.
     [Export]
-    private int rowDrawStep = 16;
+    private int rowDrawStep = 20;
     [Export]
-    private int columnDrawStep = 16;
+    private int columnDrawStep = 20;
 
     // TODO: Export array of cells.
-    // [Export]
-    // public PackedScene EmptyCell;
+    [Export]
+    public PackedScene Cell;
 
     private Grid _map;
 
@@ -26,8 +26,7 @@ public class Main : Node
 
     public override void _Ready()
     {
-        // EmptyCell = GD.Load<PackedScene>("res://scenes/cells/EmptyCell.tscn");
-        _map = new Grid(GridWidth, GridHeight);
+        _map = new Grid(GridWidth, GridHeight, Cell);
 
         DrawStageMap();
     }
@@ -41,14 +40,19 @@ public class Main : Node
 
         for (int i = 0; i < _map.cells.Count; i++)
         {
-            // TODO: Instantiate
-
-            // Position cell in the world coordinates.
             var cell = _map.cells[i];
+
+            // Position cell in the world.
             cell.Translate(new Vector2(cell.gridCoordinate.row * rowDrawStep,
                 cell.gridCoordinate.column * columnDrawStep));
             AddChild(cell);
         }
+    }
+
+    // TODO: center the camera.
+    private void PositionTheCamera()
+    {
+
     }
 }
 
@@ -59,7 +63,7 @@ class Grid
 
     public List<Cell> cells;
 
-    public Grid(int width, int height)
+    public Grid(int width, int height, PackedScene packedCell)
     {
         this.width = width;
         this.height = height;
@@ -71,7 +75,13 @@ class Grid
             for (int column = 0; column < height; column++)
             {
                 Coordinate coordinate = new Coordinate(row, column);
-                Cell cell = new Cell(CellType.EMPTY, coordinate);
+
+                // TODO: optimise code for creating instance of Cell scene.
+                Cell cell = packedCell.Instance<Cell>();
+                cell.Texture = cell.EmptyCellTexture;
+                cell.gridCoordinate = coordinate;
+                cell.cellType = CellType.EMPTY;
+                cell.Modulate = new Color(1f, 1f, 1f, 0.5f);
 
                 cells.Insert(CoordinateToIndex(coordinate), cell);
             }
