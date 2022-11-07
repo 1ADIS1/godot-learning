@@ -6,26 +6,49 @@ using System.Collections;
 public class Main : Node
 {
     [Export]
-    public int GridWidth = 9;
+    private int GridWidth = 9;
     [Export]
-    public int GridHeight = 9;
+    private int GridHeight = 9;
+
+    // TODO: Export array of textures.
+    [Export]
+    private Texture CrossRoom;
+
+    private Grid _map;
 
     //TODO: max hand size
 
     public override void _Ready()
     {
-        Grid grid = new Grid(GridWidth, GridHeight);
+        _map = new Grid(GridWidth, GridHeight, CrossRoom);
+
+        DrawStageMap();
+    }
+
+    private void DrawStageMap()
+    {
+        if (_map == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < _map.cells.Count; i++)
+        {
+            // TODO: create several components in one object and instantiate it.
+            // AddChild(_map.cells[i]);
+        }
     }
 }
 
 class Grid
 {
-    int width;
-    int height;
+    public int width;
+    public int height;
 
-    ArrayList cells;
+    public ArrayList cells;
 
-    public Grid(int width, int height)
+    // TODO: pass array of textures.
+    public Grid(int width, int height, Texture textures)
     {
         this.width = width;
         this.height = height;
@@ -36,7 +59,7 @@ class Grid
         {
             for (int y = 0; y < height; y++)
             {
-                Cell cell = new Cell();
+                Cell cell = new Cell(textures);
                 Coordinate coordinate = new Coordinate(x, y);
 
                 cells.Insert(GetCoordinateToIndex(coordinate), cell);
