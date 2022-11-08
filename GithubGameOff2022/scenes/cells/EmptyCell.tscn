@@ -4,5 +4,5 @@
 [ext_resource path="res://art/four_entrances.png" type="Texture" id=2]
 
 [node name="EmptyCell" instance=ExtResource( 1 )]
-modulate = Color( 1, 1, 1, 0.392157 )
+modulate = Color( 1, 1, 1, 0.0980392 )
 texture = ExtResource( 2 )

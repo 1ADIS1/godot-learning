@@ -25,6 +25,10 @@ window/size/test_height=720
 
 common/drop_mouse_on_gui_input_disabled=true
 
+[layer_names]
+
+2d_physics/layer_2="GridCell"
+
 [mono]
 
 project/assembly_name="GithubGameOff2022"

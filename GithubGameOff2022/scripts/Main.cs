@@ -18,11 +18,16 @@ public class Main : Node
 
     // Cell to instantiate
     [Export]
-    public PackedScene Cell;
+    public PackedScene CellTemplate;
+
+    [Export]
+    public PackedScene StartingCell;
 
     private Grid _map;
 
     private RoomTemplates _roomTemplates;
+
+    private int startingCellIndex;
 
     //TODO: max hand size
 
@@ -34,11 +39,13 @@ public class Main : Node
         _map = new Grid(GridWidth, GridHeight, _roomTemplates.EmptyCell);
 
         DrawStageMap();
+
+        startingCellIndex = SetStartingRoomCell(StartingCell.Instance<Cell>());
     }
 
     private void DrawStageMap()
     {
-        if (_map == null)
+        if (_map.IsEmpty())
         {
             GD.PushError("Tried to draw empty grid!");
             return;
@@ -46,12 +53,7 @@ public class Main : Node
 
         for (int i = 0; i < _map.cells.Count; i++)
         {
-            var cell = _map.cells[i];
-
-            // Position cell in the world.
-            cell.Translate(new Vector2(cell.gridCoordinate.row * rowDrawStep,
-                cell.gridCoordinate.column * columnDrawStep));
-            AddChild(cell);
+            CreateMapCell(_map.cells[i]);
         }
     }
 
@@ -61,24 +63,68 @@ public class Main : Node
 
     }
 
-    // TODO: Spawn rooms cells
-    private void PlaceMapCell()
+    private void CreateMapCell(Cell cell)
     {
-        if (_map == null)
+        if (_map.IsEmpty())
         {
-            GD.PushError("Tried to place map cell in the empty grid!");
+            GD.PushError("Tried to create map cell in the empty grid!");
             return;
         }
+
+        // Position cell in the world.
+        cell.Translate(GetCellWorldCoordinates(cell.gridCoordinate));
+        AddChild(cell);
     }
 
-    // TODO: set starting room cell and return its index.
-    // Assumes starting cell is cross entrance room in the middle of the grid.
-    // Places starting room in the grid and returns its index.
-    private int SetStartingRoomCell()
+    //TODO: refactor this madness.
+    private void SetExistingMapCell(Cell cell)
     {
-        // _map.cells[]
+        if (_map.IsEmpty())
+        {
+            GD.PushError("Tried to set existing map cell in the empty grid!");
+            return;
+        }
 
-        return 0;
+        int cellIndex = _map.CoordinateToIndex(cell.gridCoordinate);
+        var oldCell = GetNode<Cell>(_map.cells[cellIndex].gridCoordinate.ToString());
+
+        oldCell.Name = cell.Name;
+        oldCell.Texture = cell.Texture;
+        oldCell.cellType = cell.cellType;
+        oldCell.gridCoordinate = cell.gridCoordinate;
+        oldCell.Modulate = new Color(1f, 1f, 1f, 1f);
+        oldCell.GlobalPosition = GetCellWorldCoordinates(cell.gridCoordinate);
+        _map.cells[cellIndex] = oldCell;
+    }
+
+    // TODO: ?
+    private void RemoveMapCell(Cell cell)
+    {
+    }
+
+    // Replaces middle cell in the grid with starting cell and returns its index.
+    private int SetStartingRoomCell(Cell startingCell)
+    {
+        if (_map.IsEmpty())
+        {
+            GD.PushError("Tried to set starting map cell in the empty grid!");
+            return 0;
+        }
+
+        Coordinate startingCellCoordinate = new Coordinate(GridWidth / 2, GridHeight / 2);
+        int startingCellIndex = _map.CoordinateToIndex(startingCellCoordinate);
+
+        GD.Print("Index of starting cell: ", startingCellIndex);
+        startingCell.gridCoordinate = startingCellCoordinate;
+
+        SetExistingMapCell(_map.cells[startingCellIndex]);
+
+        return startingCellIndex;
+    }
+
+    private Vector2 GetCellWorldCoordinates(Coordinate coordinate)
+    {
+        return new Vector2(coordinate.row * rowDrawStep, coordinate.column * columnDrawStep);
     }
 }
 
@@ -106,6 +152,7 @@ class Grid
                 Cell cell = emptyCell.Instance<Cell>();
                 cell.gridCoordinate = coordinate;
                 cell.cellType = CellType.EMPTY;
+                cell.Name = coordinate.row.ToString() + coordinate.column.ToString();
 
                 cells.Insert(CoordinateToIndex(coordinate), cell);
             }
@@ -124,6 +171,11 @@ class Grid
     {
         return new Coordinate(index / width, index % height);
     }
+
+    public bool IsEmpty()
+    {
+        return cells.Count == 0;
+    }
 }
 
 public class Coordinate
@@ -135,5 +187,10 @@ public class Coordinate
     {
         this.row = row;
         this.column = column;
+    }
+
+    public override string ToString()
+    {
+        return row.ToString() + column.ToString();
     }
 }
