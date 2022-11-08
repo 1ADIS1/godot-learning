@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/tunnel.png-c9ac494df6826ff64b0905a52bda9fa1.stex"
+path="res://.import/one_entrance.png-8b10cbe30002b27a1fd4100851a73d3b.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/tunnel.png"
-dest_files=[ "res://.import/tunnel.png-c9ac494df6826ff64b0905a52bda9fa1.stex" ]
+source_file="res://art/one_entrance.png"
+dest_files=[ "res://.import/one_entrance.png-8b10cbe30002b27a1fd4100851a73d3b.stex" ]
 
 [params]
 

@@ -16,17 +16,22 @@ public class Main : Node
     [Export]
     private int columnDrawStep = 20;
 
-    // TODO: Export array of cells.
+    // Cell to instantiate
     [Export]
     public PackedScene Cell;
 
     private Grid _map;
 
+    private RoomTemplates _roomTemplates;
+
     //TODO: max hand size
 
     public override void _Ready()
     {
-        _map = new Grid(GridWidth, GridHeight, Cell);
+        // TODO: refactor searching for room templates
+        _roomTemplates = GetChild<RoomTemplates>(0);
+
+        _map = new Grid(GridWidth, GridHeight, _roomTemplates.EmptyCell);
 
         DrawStageMap();
     }
@@ -35,6 +40,7 @@ public class Main : Node
     {
         if (_map == null)
         {
+            GD.PushError("Tried to draw empty grid!");
             return;
         }
 
@@ -54,6 +60,26 @@ public class Main : Node
     {
 
     }
+
+    // TODO: Spawn rooms cells
+    private void PlaceMapCell()
+    {
+        if (_map == null)
+        {
+            GD.PushError("Tried to place map cell in the empty grid!");
+            return;
+        }
+    }
+
+    // TODO: set starting room cell and return its index.
+    // Assumes starting cell is cross entrance room in the middle of the grid.
+    // Places starting room in the grid and returns its index.
+    private int SetStartingRoomCell()
+    {
+        // _map.cells[]
+
+        return 0;
+    }
 }
 
 class Grid
@@ -63,7 +89,7 @@ class Grid
 
     public List<Cell> cells;
 
-    public Grid(int width, int height, PackedScene packedCell)
+    public Grid(int width, int height, PackedScene emptyCell)
     {
         this.width = width;
         this.height = height;
@@ -77,11 +103,9 @@ class Grid
                 Coordinate coordinate = new Coordinate(row, column);
 
                 // TODO: optimise code for creating instance of Cell scene.
-                Cell cell = packedCell.Instance<Cell>();
-                cell.Texture = cell.EmptyCellTexture;
+                Cell cell = emptyCell.Instance<Cell>();
                 cell.gridCoordinate = coordinate;
                 cell.cellType = CellType.EMPTY;
-                cell.Modulate = new Color(1f, 1f, 1f, 0.5f);
 
                 cells.Insert(CoordinateToIndex(coordinate), cell);
             }
@@ -95,6 +119,7 @@ class Grid
     }
 
     // TODO: check correctness of calculations.
+    // TODO: If grid is not squared, then the calculations might be wrong.
     public Coordinate IndexToCoordinate(int index)
     {
         return new Coordinate(index / width, index % height);

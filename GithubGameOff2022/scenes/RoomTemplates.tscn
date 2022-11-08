@@ -1,0 +1,10 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://scripts/RoomTemplates.cs" type="Script" id=1]
+[ext_resource path="res://scenes/cells/EmptyCell.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/cells/one_entrance/T.tscn" type="PackedScene" id=3]
+
+[node name="RoomTemplates" type="Node"]
+script = ExtResource( 1 )
+EmptyCell = ExtResource( 2 )
+TopEntranceRooms = [ ExtResource( 3 ) ]

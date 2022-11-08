@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://scenes/Cell.tscn" type="PackedScene" id=1]
+[ext_resource path="res://art/one_entrance.png" type="Texture" id=2]
+
+[node name="B" instance=ExtResource( 1 )]
+texture = ExtResource( 2 )
+flip_v = true

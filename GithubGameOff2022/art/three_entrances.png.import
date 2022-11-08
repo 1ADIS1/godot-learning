@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/left_dead_end_cross_room.png-456c7bb3aba36033e02c538c7f997601.stex"
+path="res://.import/three_entrances.png-69485412f7989f97e3ec664ccd2a776a.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/left_dead_end_cross_room.png"
-dest_files=[ "res://.import/left_dead_end_cross_room.png-456c7bb3aba36033e02c538c7f997601.stex" ]
+source_file="res://art/three_entrances.png"
+dest_files=[ "res://.import/three_entrances.png-69485412f7989f97e3ec664ccd2a776a.stex" ]
 
 [params]
 

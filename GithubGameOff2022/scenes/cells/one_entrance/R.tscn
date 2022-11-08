@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://scenes/Cell.tscn" type="PackedScene" id=1]
+[ext_resource path="res://art/one_entrance.png" type="Texture" id=2]
+
+[node name="R" instance=ExtResource( 1 )]
+rotation = 1.5708
+texture = ExtResource( 2 )
+offset = Vector2( 0, -16 )
