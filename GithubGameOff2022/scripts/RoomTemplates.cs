@@ -7,5 +7,11 @@ public class RoomTemplates : Node
     public PackedScene EmptyCell;
 
     [Export]
-    public Cell[] TopEntranceRooms;
+    public PackedScene[] TopEntranceRooms;
+    [Export]
+    public PackedScene[] RightEntranceRooms;
+    [Export]
+    public PackedScene[] BottomEntranceRooms;
+    [Export]
+    public PackedScene[] LeftEntranceRooms;
 }

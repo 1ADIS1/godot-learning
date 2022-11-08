@@ -27,7 +27,7 @@ public class Main : Node
 
     private RoomTemplates _roomTemplates;
 
-    private int startingCellIndex;
+    private int _startingCellIndex;
 
     //TODO: max hand size
 
@@ -40,7 +40,18 @@ public class Main : Node
 
         DrawStageMap();
 
-        startingCellIndex = SetStartingRoomCell(StartingCell.Instance<Cell>());
+        SetStartingRoomCell(StartingCell.Instance<Cell>());
+
+        GD.Print("Starting cell index: ", _startingCellIndex);
+        GD.Print("Name of starting cell: ", _map.cells[_startingCellIndex].Name);
+        if (_map.cells[_startingCellIndex].Entrances == null)
+        {
+            GD.PushError("Entrances of cell are null");
+            return;
+        }
+
+        // Generate neighbours of starting cell
+        GenerateNeighbours(_map.cells[_startingCellIndex]);
     }
 
     private void DrawStageMap()
@@ -77,7 +88,7 @@ public class Main : Node
     }
 
     //TODO: refactor this madness.
-    private void SetExistingMapCell(Cell cell)
+    private void SetExistingMapCell(Cell cell, Coordinate coordinate)
     {
         if (_map.IsEmpty())
         {
@@ -85,46 +96,81 @@ public class Main : Node
             return;
         }
 
+        cell.gridCoordinate = coordinate;
         int cellIndex = _map.CoordinateToIndex(cell.gridCoordinate);
-        var oldCell = GetNode<Cell>(_map.cells[cellIndex].gridCoordinate.ToString());
 
-        oldCell.Name = cell.Name;
-        oldCell.Texture = cell.Texture;
-        oldCell.cellType = cell.cellType;
-        oldCell.gridCoordinate = cell.gridCoordinate;
-        oldCell.Modulate = new Color(1f, 1f, 1f, 1f);
-        oldCell.GlobalPosition = GetCellWorldCoordinates(cell.gridCoordinate);
-        _map.cells[cellIndex] = oldCell;
+        // Remove previous node
+        var nodeToRemove = GetNode<Cell>(_map.cells[cellIndex].gridCoordinate.ToString());
+
+        cell.Name = nodeToRemove.Name;
+        // oldCell.cellType = cell.cellType;
+        cell.GlobalPosition = GetCellWorldCoordinates(nodeToRemove.gridCoordinate);
+
+        _map.cells[cellIndex] = cell;
+
+        RemoveChild(nodeToRemove);
+        nodeToRemove.QueueFree();
+
+        AddChild(cell);
     }
 
-    // TODO: ?
-    private void RemoveMapCell(Cell cell)
-    {
-    }
-
-    // Replaces middle cell in the grid with starting cell and returns its index.
-    private int SetStartingRoomCell(Cell startingCell)
+    // Replaces middle cell in the grid with starting cell and fills in starting cell index;
+    private void SetStartingRoomCell(Cell startingCell)
     {
         if (_map.IsEmpty())
         {
             GD.PushError("Tried to set starting map cell in the empty grid!");
-            return 0;
+            return;
         }
 
+        // TODO: aaaaaand refactor another madness.
         Coordinate startingCellCoordinate = new Coordinate(GridWidth / 2, GridHeight / 2);
-        int startingCellIndex = _map.CoordinateToIndex(startingCellCoordinate);
-
-        GD.Print("Index of starting cell: ", startingCellIndex);
+        _startingCellIndex = _map.CoordinateToIndex(startingCellCoordinate);
         startingCell.gridCoordinate = startingCellCoordinate;
 
-        SetExistingMapCell(_map.cells[startingCellIndex]);
-
-        return startingCellIndex;
+        SetExistingMapCell(startingCell, startingCellCoordinate);
     }
 
     private Vector2 GetCellWorldCoordinates(Coordinate coordinate)
     {
         return new Vector2(coordinate.row * rowDrawStep, coordinate.column * columnDrawStep);
+    }
+
+    /**
+    Places on the map neighbours of the passed cell.
+    */
+    private void GenerateNeighbours(Cell cell)
+    {
+        Vector2 topEntrance = new Vector2(8f, -8f);
+        Vector2 rightEntrance = new Vector2(24f, 8f);
+        Vector2 bottomEntrance = new Vector2(8f, 24f);
+        Vector2 leftEntrance = new Vector2(-8f, 8f);
+
+        Random random = new Random();
+
+        if (_roomTemplates == null)
+        {
+            GD.PushError("Trying to generate cells with empty room templates class!");
+        }
+
+        foreach (Vector2 entry in cell.Entrances)
+        {
+            if (entry == topEntrance)
+            {
+                // Choose random top entrance cell.
+                var bottomEntrances = _roomTemplates.BottomEntranceRooms;
+                Cell cellToPlace = bottomEntrances[random.Next(0, bottomEntrances.Length)].Instance<Cell>();
+
+                // TODO: check if top, bottom and etc do exist
+                // TODO: fix bug with incrorrect global coordinates
+                Coordinate coordinateToPlace = cell.gridCoordinate.Left();
+
+                // TODO: Place selected cell in the grid.
+                GD.Print("Cell ", cellToPlace.Name, " will be set on the coords: ", coordinateToPlace);
+                cellToPlace.gridCoordinate = coordinateToPlace;
+                SetExistingMapCell(cellToPlace, coordinateToPlace);
+            }
+        }
     }
 }
 
@@ -192,5 +238,25 @@ public class Coordinate
     public override string ToString()
     {
         return row.ToString() + column.ToString();
+    }
+
+    public Coordinate Top()
+    {
+        return new Coordinate(row - 1, column);
+    }
+
+    public Coordinate Right()
+    {
+        return new Coordinate(row, column + 1);
+    }
+
+    public Coordinate Bottom()
+    {
+        return new Coordinate(row + 1, column);
+    }
+
+    public Coordinate Left()
+    {
+        return new Coordinate(row, column - 1);
     }
 }

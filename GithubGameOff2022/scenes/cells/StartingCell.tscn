@@ -1,9 +1,34 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://scripts/Cell.cs" type="Script" id=1]
 [ext_resource path="res://art/four_entrances.png" type="Texture" id=2]
+[ext_resource path="res://scenes/EntranceCell.tscn" type="PackedScene" id=3]
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 7.0
 
 [node name="Cell" type="Sprite"]
 texture = ExtResource( 2 )
 centered = false
 script = ExtResource( 1 )
+Entrances = PoolVector2Array( 8, -8, 24, 8, 8, 24, -8, 8 )
+
+[node name="CellZone" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CellZone"]
+position = Vector2( 8, 8 )
+shape = SubResource( 1 )
+
+[node name="TopEntrance" parent="." instance=ExtResource( 3 )]
+position = Vector2( 8, -8 )
+
+[node name="RightEntrance" parent="." instance=ExtResource( 3 )]
+position = Vector2( 24, 8 )
+
+[node name="BottomEntrance" parent="." instance=ExtResource( 3 )]
+position = Vector2( 8, 24 )
+
+[node name="LeftEntrance" parent="." instance=ExtResource( 3 )]
+position = Vector2( -8, 8 )
