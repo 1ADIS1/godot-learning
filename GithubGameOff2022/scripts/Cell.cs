@@ -9,7 +9,15 @@ public class Cell : Sprite
     public Coordinate gridCoordinate;
 
     [Export]
+    // Get rid of vectors and just place ints from 1 to 4;
     public Vector2[] Entrances;
+
+    public bool isGenerated = false;
+
+    public bool HasEntrances()
+    {
+        return Entrances != null;
+    }
 }
 
 public enum CellType

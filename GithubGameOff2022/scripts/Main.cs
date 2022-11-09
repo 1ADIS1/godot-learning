@@ -30,32 +30,43 @@ public class Main : Node
 
     //TODO: max hand size
 
+    // TODO: current room is filled with blue animated polygon.
     public override void _Ready()
     {
         // TODO: refactor searching for room templates
         _roomTemplates = GetChild<RoomTemplates>(0);
 
+        GenerateMap();
+    }
+
+    // TODO: Listen to Space key to generate another map.
+    // public override void _Input(InputEvent @event)
+    // {
+    //     if (@event is InputEventKey)
+    //     {
+    //         if (@event.IsActionPressed("ui_select"))
+    //         {
+    //             GD.Print("Map is being generated again!");
+    //             _map = new Grid(GridSize, _roomTemplates.EmptyCell);
+
+    //             SetStartingRoomCell(StartingCell.Instance<Cell>());
+
+    //             // Generate neighbours of starting cell
+    //             GenerateNeighbours(_map.cells[_startingCellIndex]);
+    //         }
+    //     }
+    // }
+
+    private void GenerateMap()
+    {
         _map = new Grid(GridSize, _roomTemplates.EmptyCell);
 
         DrawStageMap();
 
         SetStartingRoomCell(StartingCell.Instance<Cell>());
 
-        // Generate neighbours of starting cell
+        // Iterate through each cell that has neighbours and instantiate them.
         GenerateNeighbours(_map.cells[_startingCellIndex]);
-    }
-
-    // TODO: Listen to Space key to generate another map.
-    public override void _Input(InputEvent @event)
-    {
-        if (@event is InputEventKey)
-        {
-            if (@event.IsActionPressed("ui_select"))
-            {
-                GD.Print("Map is being generated again!");
-                // Gr
-            }
-        }
     }
 
     private void DrawStageMap()
@@ -108,6 +119,7 @@ public class Main : Node
 
         cell.Name = nodeToRemove.Name;
         // oldCell.cellType = cell.cellType;
+        cell.isGenerated = true;
         cell.GlobalPosition = GetCellWorldCoordinates(nodeToRemove.gridCoordinate);
 
         _map.cells[cellIndex] = cell;
@@ -144,6 +156,8 @@ public class Main : Node
     Places on the map neighbours of the passed cell.
     */
     // TODO: rewrite and optimise generation of neighbours.
+    // TODO: prevent generation of cells with open entrances on the edges of the map.
+    // TODO: adjacent cells should have entrances to each other.
     private void GenerateNeighbours(Cell cell)
     {
         Vector2 topEntrance = new Vector2(8f, -8f);
@@ -151,52 +165,84 @@ public class Main : Node
         Vector2 bottomEntrance = new Vector2(8f, 24f);
         Vector2 leftEntrance = new Vector2(-8f, 8f);
 
+        var bottomEntrances = _roomTemplates.BottomEntranceRooms;
+        var leftEntrances = _roomTemplates.LeftEntranceRooms;
+        var topEntrances = _roomTemplates.TopEntranceRooms;
+        var rightEntrances = _roomTemplates.RightEntranceRooms;
+
         Random random = new Random();
 
         if (_roomTemplates == null)
         {
             GD.PushError("Trying to generate cells with empty room templates class!");
+            return;
+        }
+        else if (!cell.HasEntrances())
+        {
+            GD.PushWarning("Trying to generate neighbours of cell with no entrances");
+            return;
         }
 
         foreach (Vector2 entry in cell.Entrances)
         {
+            Cell cellToPlace = null;
+            Coordinate coordinateToPlace = null;
+
             if (entry == topEntrance)
             {
                 // Choose a random Bottom entrance cell.
-                var bottomEntrances = _roomTemplates.BottomEntranceRooms;
-                Cell cellToPlace = bottomEntrances[random.Next(0, bottomEntrances.Length)].Instance<Cell>();
+                cellToPlace = bottomEntrances[random.Next(0, bottomEntrances.Length)].Instance<Cell>();
+                coordinateToPlace = cell.gridCoordinate.Top();
 
-                Coordinate coordinateToPlace = cell.gridCoordinate.Top();
-
-                SetExistingMapCell(cellToPlace, coordinateToPlace);
+                // If coordinate is not valid - do not spawn this cell.
+                if (!Coordinate.IsValidCoordinate(coordinateToPlace, GridSize))
+                {
+                    continue;
+                }
             }
             else if (entry == rightEntrance)
             {
-                var leftEntrances = _roomTemplates.LeftEntranceRooms;
-                Cell cellToPlace = leftEntrances[random.Next(0, leftEntrances.Length)].Instance<Cell>();
+                cellToPlace = leftEntrances[random.Next(0, leftEntrances.Length)].Instance<Cell>();
+                coordinateToPlace = cell.gridCoordinate.Right();
 
-                Coordinate coordinateToPlace = cell.gridCoordinate.Right();
-
-                SetExistingMapCell(cellToPlace, coordinateToPlace);
+                // If coordinate is not valid - do not spawn this cell.
+                if (!Coordinate.IsValidCoordinate(coordinateToPlace, GridSize))
+                {
+                    continue;
+                }
             }
             else if (entry == bottomEntrance)
             {
-                var topEntrances = _roomTemplates.TopEntranceRooms;
-                Cell cellToPlace = topEntrances[random.Next(0, topEntrances.Length)].Instance<Cell>();
+                cellToPlace = topEntrances[random.Next(0, topEntrances.Length)].Instance<Cell>();
+                coordinateToPlace = cell.gridCoordinate.Bottom();
 
-                Coordinate coordinateToPlace = cell.gridCoordinate.Bottom();
-
-                SetExistingMapCell(cellToPlace, coordinateToPlace);
+                // If coordinate is not valid - do not spawn this cell.
+                if (!Coordinate.IsValidCoordinate(coordinateToPlace, GridSize))
+                {
+                    continue;
+                }
             }
             else if (entry == leftEntrance)
             {
-                var rightEntrances = _roomTemplates.RightEntranceRooms;
-                Cell cellToPlace = rightEntrances[random.Next(0, rightEntrances.Length)].Instance<Cell>();
+                cellToPlace = rightEntrances[random.Next(0, rightEntrances.Length)].Instance<Cell>();
+                coordinateToPlace = cell.gridCoordinate.Left();
 
-                Coordinate coordinateToPlace = cell.gridCoordinate.Left();
-
-                SetExistingMapCell(cellToPlace, coordinateToPlace);
+                // If coordinate is not valid - do not spawn this cell.
+                if (!Coordinate.IsValidCoordinate(coordinateToPlace, GridSize))
+                {
+                    continue;
+                }
             }
+
+            // Checks if map already contains generated cell on chosen coordinates.
+            if (cellToPlace == null || coordinateToPlace == null || _map.cells[_map.CoordinateToIndex(coordinateToPlace)].isGenerated)
+            {
+                GD.PushWarning("Failed to generate neighbour cell on a coordinate.");
+                continue;
+            }
+
+            SetExistingMapCell(cellToPlace, coordinateToPlace);
+            GenerateNeighbours(cellToPlace);
         }
     }
 }
@@ -267,6 +313,16 @@ public class Coordinate
     public override string ToString()
     {
         return x.ToString() + y.ToString();
+    }
+
+    public static bool IsValidCoordinate(Coordinate coordinate, int gridSize)
+    {
+        if (coordinate.x < 0 || coordinate.y < 0 || coordinate.x >= gridSize || coordinate.y >= gridSize)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public Coordinate Top()
