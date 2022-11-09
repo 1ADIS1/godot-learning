@@ -5,10 +5,9 @@ using System.Collections;
 
 public class Main : Node
 {
+    // Defines GridSize x GridSize cells
     [Export]
-    private int GridWidth = 9;
-    [Export]
-    private int GridHeight = 9;
+    private int GridSize = 9;
 
     // Offset of cell in the wolrd coordinates.
     [Export]
@@ -36,22 +35,27 @@ public class Main : Node
         // TODO: refactor searching for room templates
         _roomTemplates = GetChild<RoomTemplates>(0);
 
-        _map = new Grid(GridWidth, GridHeight, _roomTemplates.EmptyCell);
+        _map = new Grid(GridSize, _roomTemplates.EmptyCell);
 
         DrawStageMap();
 
         SetStartingRoomCell(StartingCell.Instance<Cell>());
 
-        GD.Print("Starting cell index: ", _startingCellIndex);
-        GD.Print("Name of starting cell: ", _map.cells[_startingCellIndex].Name);
-        if (_map.cells[_startingCellIndex].Entrances == null)
-        {
-            GD.PushError("Entrances of cell are null");
-            return;
-        }
-
         // Generate neighbours of starting cell
         GenerateNeighbours(_map.cells[_startingCellIndex]);
+    }
+
+    // TODO: Listen to Space key to generate another map.
+    public override void _Input(InputEvent @event)
+    {
+        if (@event is InputEventKey)
+        {
+            if (@event.IsActionPressed("ui_select"))
+            {
+                GD.Print("Map is being generated again!");
+                // Gr
+            }
+        }
     }
 
     private void DrawStageMap()
@@ -124,7 +128,7 @@ public class Main : Node
         }
 
         // TODO: aaaaaand refactor another madness.
-        Coordinate startingCellCoordinate = new Coordinate(GridWidth / 2, GridHeight / 2);
+        Coordinate startingCellCoordinate = new Coordinate(GridSize / 2, GridSize / 2);
         _startingCellIndex = _map.CoordinateToIndex(startingCellCoordinate);
         startingCell.gridCoordinate = startingCellCoordinate;
 
@@ -133,12 +137,13 @@ public class Main : Node
 
     private Vector2 GetCellWorldCoordinates(Coordinate coordinate)
     {
-        return new Vector2(coordinate.row * rowDrawStep, coordinate.column * columnDrawStep);
+        return new Vector2(coordinate.x * rowDrawStep, coordinate.y * columnDrawStep);
     }
 
     /**
     Places on the map neighbours of the passed cell.
     */
+    // TODO: rewrite and optimise generation of neighbours.
     private void GenerateNeighbours(Cell cell)
     {
         Vector2 topEntrance = new Vector2(8f, -8f);
@@ -157,40 +162,63 @@ public class Main : Node
         {
             if (entry == topEntrance)
             {
-                // Choose random top entrance cell.
+                // Choose a random Bottom entrance cell.
                 var bottomEntrances = _roomTemplates.BottomEntranceRooms;
                 Cell cellToPlace = bottomEntrances[random.Next(0, bottomEntrances.Length)].Instance<Cell>();
 
-                // TODO: check if top, bottom and etc do exist
-                // TODO: fix bug with incrorrect global coordinates
+                Coordinate coordinateToPlace = cell.gridCoordinate.Top();
+
+                SetExistingMapCell(cellToPlace, coordinateToPlace);
+            }
+            else if (entry == rightEntrance)
+            {
+                var leftEntrances = _roomTemplates.LeftEntranceRooms;
+                Cell cellToPlace = leftEntrances[random.Next(0, leftEntrances.Length)].Instance<Cell>();
+
+                Coordinate coordinateToPlace = cell.gridCoordinate.Right();
+
+                SetExistingMapCell(cellToPlace, coordinateToPlace);
+            }
+            else if (entry == bottomEntrance)
+            {
+                var topEntrances = _roomTemplates.TopEntranceRooms;
+                Cell cellToPlace = topEntrances[random.Next(0, topEntrances.Length)].Instance<Cell>();
+
+                Coordinate coordinateToPlace = cell.gridCoordinate.Bottom();
+
+                SetExistingMapCell(cellToPlace, coordinateToPlace);
+            }
+            else if (entry == leftEntrance)
+            {
+                var rightEntrances = _roomTemplates.RightEntranceRooms;
+                Cell cellToPlace = rightEntrances[random.Next(0, rightEntrances.Length)].Instance<Cell>();
+
                 Coordinate coordinateToPlace = cell.gridCoordinate.Left();
 
-                // TODO: Place selected cell in the grid.
-                GD.Print("Cell ", cellToPlace.Name, " will be set on the coords: ", coordinateToPlace);
-                cellToPlace.gridCoordinate = coordinateToPlace;
                 SetExistingMapCell(cellToPlace, coordinateToPlace);
             }
         }
     }
 }
 
+/**
+Class for generating N x N grid.
+*/
 class Grid
 {
-    public int width;
-    public int height;
+    public int size;
 
     public List<Cell> cells;
 
-    public Grid(int width, int height, PackedScene emptyCell)
+    public Grid(int size, PackedScene emptyCell)
     {
-        this.width = width;
-        this.height = height;
+        this.size = size;
 
-        cells = new List<Cell>(width * height);
+        cells = new List<Cell>(size * size);
 
-        for (int row = 0; row < width; row++)
+        for (int column = 0; column < size; column++)
         {
-            for (int column = 0; column < height; column++)
+            for (int row = 0; row < size; row++)
             {
                 Coordinate coordinate = new Coordinate(row, column);
 
@@ -198,7 +226,7 @@ class Grid
                 Cell cell = emptyCell.Instance<Cell>();
                 cell.gridCoordinate = coordinate;
                 cell.cellType = CellType.EMPTY;
-                cell.Name = coordinate.row.ToString() + coordinate.column.ToString();
+                cell.Name = coordinate.x.ToString() + coordinate.y.ToString();
 
                 cells.Insert(CoordinateToIndex(coordinate), cell);
             }
@@ -208,14 +236,14 @@ class Grid
     // TODO: check correctness of calculations.
     public int CoordinateToIndex(Coordinate coordinate)
     {
-        return coordinate.column + coordinate.row * width;
+        return coordinate.x + coordinate.y * size;
     }
 
     // TODO: check correctness of calculations.
     // TODO: If grid is not squared, then the calculations might be wrong.
     public Coordinate IndexToCoordinate(int index)
     {
-        return new Coordinate(index / width, index % height);
+        return new Coordinate(index % size, index / size);
     }
 
     public bool IsEmpty()
@@ -224,39 +252,40 @@ class Grid
     }
 }
 
+// TODO: check if top, bottom and etc do exist
 public class Coordinate
 {
-    public int row;
-    public int column;
+    public int x;
+    public int y;
 
-    public Coordinate(int row, int column)
+    public Coordinate(int x, int y)
     {
-        this.row = row;
-        this.column = column;
+        this.x = x;
+        this.y = y;
     }
 
     public override string ToString()
     {
-        return row.ToString() + column.ToString();
+        return x.ToString() + y.ToString();
     }
 
     public Coordinate Top()
     {
-        return new Coordinate(row - 1, column);
+        return new Coordinate(x, y - 1);
     }
 
     public Coordinate Right()
     {
-        return new Coordinate(row, column + 1);
+        return new Coordinate(x + 1, y);
     }
 
     public Coordinate Bottom()
     {
-        return new Coordinate(row + 1, column);
+        return new Coordinate(x, y + 1);
     }
 
     public Coordinate Left()
     {
-        return new Coordinate(row, column - 1);
+        return new Coordinate(x - 1, y);
     }
 }

@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://scenes/Cell.tscn" type="PackedScene" id=1]
+[ext_resource path="res://art/three_entrances.png" type="Texture" id=2]
+[ext_resource path="res://scenes/EntranceCell.tscn" type="PackedScene" id=3]
+
+[node name="TRB" instance=ExtResource( 1 )]
+texture = ExtResource( 2 )
+Entrances = PoolVector2Array( 8, -8, 24, 8, 8, 24 )
+
+[node name="Top" parent="." index="0" instance=ExtResource( 3 )]
+position = Vector2( 8, -8 )
+
+[node name="Right" parent="." index="1" instance=ExtResource( 3 )]
+position = Vector2( 24, 8 )
+
+[node name="Bottom" parent="." index="2" instance=ExtResource( 3 )]
+position = Vector2( 8, 24 )
