@@ -14,4 +14,8 @@ public class RoomTemplates : Node
     public PackedScene[] BottomEntranceRooms;
     [Export]
     public PackedScene[] LeftEntranceRooms;
+    [Export]
+    public PackedScene[] DeadEnds;
+
+    // Room templates
 }

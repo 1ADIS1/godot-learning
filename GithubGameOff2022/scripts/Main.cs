@@ -15,7 +15,7 @@ public class Main : Node
     private int columnDrawStep = 20;
 
     // Sufficient number of rooms to generate.
-    [Export] public int EnoughRoomsNumber = 16;
+    [Export] public int ExpectedNumberOfRooms = 16;
 
     // Queue of generated rooms.
     public Queue<Cell> rooms = new Queue<Cell>();
@@ -33,6 +33,8 @@ public class Main : Node
 
     private int _startingCellIndex;
 
+    private int _currentRoomsNumber;
+
     //TODO: max hand size
 
     // TODO: current room is filled with blue animated polygon.
@@ -43,11 +45,15 @@ public class Main : Node
 
         GenerateMap();
 
+        // If generation did not produce expected number of rooms - try again.
+        if (_currentRoomsNumber < ExpectedNumberOfRooms)
+        {
+            GetTree().ReloadCurrentScene();
+        }
+
         PrintRooms();
 
-        // Generated room with one neighbour with chance 50/50 becomes dead-end
-
-        // All dead-ends will be turned into the special rooms
+        // Generated rooms with one neighbour with chance 50/50 becomes *special room*.
 
         // If the cell with one neighbour is not dead end, then spawn secret room adjacent to it. 
     }
@@ -84,8 +90,6 @@ public class Main : Node
 
         // Iterate through each cell that has neighbours and instantiate them.
         GenerateNeighbours(_map.cells[_startingCellIndex]);
-
-        GD.Print("Neighbour count of starting room is: ", _map.cells[_startingCellIndex].generatedNeighbourCount);
     }
 
     private void DrawStageMap()
@@ -157,6 +161,9 @@ public class Main : Node
                 cell.generatedNeighbourCount++;
             }
         }
+
+        // Increment current number of rooms.
+        _currentRoomsNumber++;
 
         RemoveChild(nodeToRemove);
         nodeToRemove.QueueFree();
@@ -250,10 +257,10 @@ public class Main : Node
             }
 
             // If we already have enough rooms, give up.
-            // if ()
-
-            // Random 50% chance, give up.
-            // if ()
+            // if (_currentRoomsNumber >= ExpectedNumberOfRooms)
+            // {
+            //     continue;
+            // }
 
             // Otherwise, mark the neighbour cell as having a room in it, and add it to the queue.
             SetExistingMapCell(cellToPlace, coordinateToPlace);

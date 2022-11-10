@@ -7,6 +7,7 @@
 
 [node name="Main" type="Node"]
 script = ExtResource( 1 )
+ExpectedNumberOfRooms = 6
 CellTemplate = ExtResource( 2 )
 StartingCell = ExtResource( 4 )
 
