@@ -4,23 +4,22 @@ using System;
 // TODO: separate Cell and Sprite classes
 public class Cell : Sprite
 {
-    // TODO: export cell type and set it in the editor, not in the code
-    public CellType cellType;
     public Coordinate gridCoordinate;
 
-    [Export]
-    // Get rid of vectors and just place ints from 1 to 4;
-    public Vector2[] Entrances;
+    public int generatedNeighbourCount = 0;
+
+    [Export(PropertyHint.Flags, "Top,Right,Bottom,Left")]
+    public int Entrances;
 
     public bool isGenerated = false;
 
+    public override void _Ready()
+    {
+        GD.Print(Entrances);
+    }
+
     public bool HasEntrances()
     {
-        return Entrances != null;
+        return Entrances > 0x0;
     }
-}
-
-public enum CellType
-{
-    EMPTY = 0,
 }

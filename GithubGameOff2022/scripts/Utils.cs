@@ -11,4 +11,9 @@ public static class Utils
     {
         return 0f;
     }
+
+    public static bool IsBitEnabled(int bitMask, int index)
+    {
+        return (bitMask & (1 << index)) != 0;
+    }
 }

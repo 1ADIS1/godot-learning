@@ -1,7 +1,6 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Collections;
 
 public class Main : Node
 {
@@ -14,6 +13,12 @@ public class Main : Node
     private int rowDrawStep = 20;
     [Export]
     private int columnDrawStep = 20;
+
+    // Sufficient number of rooms to generate.
+    [Export] public int EnoughRoomsNumber = 16;
+
+    // Queue of generated rooms.
+    public Queue<Cell> rooms = new Queue<Cell>();
 
     // Cell to instantiate
     [Export]
@@ -37,25 +42,37 @@ public class Main : Node
         _roomTemplates = GetChild<RoomTemplates>(0);
 
         GenerateMap();
+
+        PrintRooms();
+
+        // Generated room with one neighbour with chance 50/50 becomes dead-end
+
+        // All dead-ends will be turned into the special rooms
+
+        // If the cell with one neighbour is not dead end, then spawn secret room adjacent to it. 
     }
 
-    // TODO: Listen to Space key to generate another map.
-    // public override void _Input(InputEvent @event)
-    // {
-    //     if (@event is InputEventKey)
-    //     {
-    //         if (@event.IsActionPressed("ui_select"))
-    //         {
-    //             GD.Print("Map is being generated again!");
-    //             _map = new Grid(GridSize, _roomTemplates.EmptyCell);
+    public void PrintRooms()
+    {
+        GD.Print("\n-------------------------------------------------------------------\n");
+        foreach (Cell cell in rooms)
+        {
+            GD.Print("Room: ", cell.Name, " with ", cell.generatedNeighbourCount, " neighbours was added to the queue.");
+        }
+        GD.Print("\n-------------------------------------------------------------------\n");
+    }
 
-    //             SetStartingRoomCell(StartingCell.Instance<Cell>());
-
-    //             // Generate neighbours of starting cell
-    //             GenerateNeighbours(_map.cells[_startingCellIndex]);
-    //         }
-    //     }
-    // }
+    // Listen to Space key to restart scene.
+    public override void _Input(InputEvent @event)
+    {
+        if (@event is InputEventKey)
+        {
+            if (@event.IsActionPressed("ui_select"))
+            {
+                GetTree().ReloadCurrentScene();
+            }
+        }
+    }
 
     private void GenerateMap()
     {
@@ -67,6 +84,8 @@ public class Main : Node
 
         // Iterate through each cell that has neighbours and instantiate them.
         GenerateNeighbours(_map.cells[_startingCellIndex]);
+
+        GD.Print("Neighbour count of starting room is: ", _map.cells[_startingCellIndex].generatedNeighbourCount);
     }
 
     private void DrawStageMap()
@@ -118,16 +137,33 @@ public class Main : Node
         var nodeToRemove = GetNode<Cell>(_map.cells[cellIndex].gridCoordinate.ToString());
 
         cell.Name = nodeToRemove.Name;
-        // oldCell.cellType = cell.cellType;
         cell.isGenerated = true;
         cell.GlobalPosition = GetCellWorldCoordinates(nodeToRemove.gridCoordinate);
 
         _map.cells[cellIndex] = cell;
 
+        // Increment generated neighbour count of adjacent cells.
+        // For every generated neighbour, increment this cell's neighbour counter.
+        var neighbours = _map.GetNeighbours(cell);
+        if (neighbours != null)
+        {
+            foreach (Cell neighbour in neighbours)
+            {
+                if (!neighbour.isGenerated)
+                {
+                    continue;
+                }
+                _map.cells[_map.CoordinateToIndex(neighbour.gridCoordinate)].generatedNeighbourCount++;
+                cell.generatedNeighbourCount++;
+            }
+        }
+
         RemoveChild(nodeToRemove);
         nodeToRemove.QueueFree();
 
         AddChild(cell);
+        rooms.Enqueue(cell);
+        GD.Print("Added child with name ", cell.Name, " and neighbour count", cell.generatedNeighbourCount);
     }
 
     // Replaces middle cell in the grid with starting cell and fills in starting cell index;
@@ -153,25 +189,12 @@ public class Main : Node
     }
 
     /**
-    Places on the map neighbours of the passed cell.
+    Generates given cell's neighbours on the map.
     */
-    // TODO: rewrite and optimise generation of neighbours.
     // TODO: prevent generation of cells with open entrances on the edges of the map.
     // TODO: adjacent cells should have entrances to each other.
     private void GenerateNeighbours(Cell cell)
     {
-        Vector2 topEntrance = new Vector2(8f, -8f);
-        Vector2 rightEntrance = new Vector2(24f, 8f);
-        Vector2 bottomEntrance = new Vector2(8f, 24f);
-        Vector2 leftEntrance = new Vector2(-8f, 8f);
-
-        var bottomEntrances = _roomTemplates.BottomEntranceRooms;
-        var leftEntrances = _roomTemplates.LeftEntranceRooms;
-        var topEntrances = _roomTemplates.TopEntranceRooms;
-        var rightEntrances = _roomTemplates.RightEntranceRooms;
-
-        Random random = new Random();
-
         if (_roomTemplates == null)
         {
             GD.PushError("Trying to generate cells with empty room templates class!");
@@ -179,169 +202,87 @@ public class Main : Node
         }
         else if (!cell.HasEntrances())
         {
-            GD.PushWarning("Trying to generate neighbours of cell with no entrances");
             return;
         }
 
-        foreach (Vector2 entry in cell.Entrances)
+        PackedScene[][] cellsWithEntrances = {
+            _roomTemplates.BottomEntranceRooms,
+            _roomTemplates.LeftEntranceRooms,
+            _roomTemplates.TopEntranceRooms,
+            _roomTemplates.RightEntranceRooms
+        };
+
+        Random random = new Random();
+
+        for (int index = 0; index < 4; index++)
         {
             Cell cellToPlace = null;
             Coordinate coordinateToPlace = null;
+            Coordinate[] adjacentCoordinates = cell.gridCoordinate.GetAdjacentCoordinates();
 
-            if (entry == topEntrance)
+            // Check if entrance exists
+            if (Utils.IsBitEnabled(cell.Entrances, index))
             {
-                // Choose a random Bottom entrance cell.
-                cellToPlace = bottomEntrances[random.Next(0, bottomEntrances.Length)].Instance<Cell>();
-                coordinateToPlace = cell.gridCoordinate.Top();
-
-                // If coordinate is not valid - do not spawn this cell.
-                if (!Coordinate.IsValidCoordinate(coordinateToPlace, GridSize))
-                {
-                    continue;
-                }
-            }
-            else if (entry == rightEntrance)
-            {
-                cellToPlace = leftEntrances[random.Next(0, leftEntrances.Length)].Instance<Cell>();
-                coordinateToPlace = cell.gridCoordinate.Right();
-
-                // If coordinate is not valid - do not spawn this cell.
-                if (!Coordinate.IsValidCoordinate(coordinateToPlace, GridSize))
-                {
-                    continue;
-                }
-            }
-            else if (entry == bottomEntrance)
-            {
-                cellToPlace = topEntrances[random.Next(0, topEntrances.Length)].Instance<Cell>();
-                coordinateToPlace = cell.gridCoordinate.Bottom();
-
-                // If coordinate is not valid - do not spawn this cell.
-                if (!Coordinate.IsValidCoordinate(coordinateToPlace, GridSize))
-                {
-                    continue;
-                }
-            }
-            else if (entry == leftEntrance)
-            {
-                cellToPlace = rightEntrances[random.Next(0, rightEntrances.Length)].Instance<Cell>();
-                coordinateToPlace = cell.gridCoordinate.Left();
-
-                // If coordinate is not valid - do not spawn this cell.
-                if (!Coordinate.IsValidCoordinate(coordinateToPlace, GridSize))
-                {
-                    continue;
-                }
+                // Choose a random entrance cell.
+                cellToPlace = cellsWithEntrances[index][random.Next(0, cellsWithEntrances[index].Length)].Instance<Cell>();
+                coordinateToPlace = adjacentCoordinates[index];
             }
 
-            // Checks if map already contains generated cell on chosen coordinates.
-            if (cellToPlace == null || coordinateToPlace == null || _map.cells[_map.CoordinateToIndex(coordinateToPlace)].isGenerated)
+            // If nothing was chosen.
+            if (cellToPlace == null || coordinateToPlace == null)
             {
-                GD.PushWarning("Failed to generate neighbour cell on a coordinate.");
                 continue;
             }
 
+            cellToPlace.gridCoordinate = coordinateToPlace;
+
+            // If coordinate is not valid or cell is already occupied, give up.
+            if (!Coordinate.IsValidCoordinate(coordinateToPlace, GridSize) ||
+                _map.cells[_map.CoordinateToIndex(coordinateToPlace)].isGenerated)
+            {
+                continue;
+            }
+
+            // If cellToPlace has more than one generated neighbour, give up.
+            if (!MoreThanOneNeighbourGenerationCheck(cellToPlace))
+            {
+                continue;
+            }
+
+            // If we already have enough rooms, give up.
+            // if ()
+
+            // Random 50% chance, give up.
+            // if ()
+
+            // Otherwise, mark the neighbour cell as having a room in it, and add it to the queue.
             SetExistingMapCell(cellToPlace, coordinateToPlace);
             GenerateNeighbours(cellToPlace);
         }
     }
-}
 
-/**
-Class for generating N x N grid.
-*/
-class Grid
-{
-    public int size;
-
-    public List<Cell> cells;
-
-    public Grid(int size, PackedScene emptyCell)
+    private bool MoreThanOneNeighbourGenerationCheck(Cell cellToPlace)
     {
-        this.size = size;
-
-        cells = new List<Cell>(size * size);
-
-        for (int column = 0; column < size; column++)
+        var cellToPlaceNeigbours = _map.GetNeighbours(cellToPlace);
+        int generatedNeighboursCount = 0;
+        if (cellToPlaceNeigbours == null)
         {
-            for (int row = 0; row < size; row++)
-            {
-                Coordinate coordinate = new Coordinate(row, column);
-
-                // TODO: optimise code for creating instance of Cell scene.
-                Cell cell = emptyCell.Instance<Cell>();
-                cell.gridCoordinate = coordinate;
-                cell.cellType = CellType.EMPTY;
-                cell.Name = coordinate.x.ToString() + coordinate.y.ToString();
-
-                cells.Insert(CoordinateToIndex(coordinate), cell);
-            }
+            return false;
         }
-    }
 
-    // TODO: check correctness of calculations.
-    public int CoordinateToIndex(Coordinate coordinate)
-    {
-        return coordinate.x + coordinate.y * size;
-    }
-
-    // TODO: check correctness of calculations.
-    // TODO: If grid is not squared, then the calculations might be wrong.
-    public Coordinate IndexToCoordinate(int index)
-    {
-        return new Coordinate(index % size, index / size);
-    }
-
-    public bool IsEmpty()
-    {
-        return cells.Count == 0;
-    }
-}
-
-// TODO: check if top, bottom and etc do exist
-public class Coordinate
-{
-    public int x;
-    public int y;
-
-    public Coordinate(int x, int y)
-    {
-        this.x = x;
-        this.y = y;
-    }
-
-    public override string ToString()
-    {
-        return x.ToString() + y.ToString();
-    }
-
-    public static bool IsValidCoordinate(Coordinate coordinate, int gridSize)
-    {
-        if (coordinate.x < 0 || coordinate.y < 0 || coordinate.x >= gridSize || coordinate.y >= gridSize)
+        foreach (Cell neighbour in cellToPlaceNeigbours)
+        {
+            if (!neighbour.isGenerated)
+            {
+                continue;
+            }
+            generatedNeighboursCount++;
+        }
+        if (cellToPlaceNeigbours != null && generatedNeighboursCount > 1)
         {
             return false;
         }
 
         return true;
-    }
-
-    public Coordinate Top()
-    {
-        return new Coordinate(x, y - 1);
-    }
-
-    public Coordinate Right()
-    {
-        return new Coordinate(x + 1, y);
-    }
-
-    public Coordinate Bottom()
-    {
-        return new Coordinate(x, y + 1);
-    }
-
-    public Coordinate Left()
-    {
-        return new Coordinate(x - 1, y);
     }
 }
