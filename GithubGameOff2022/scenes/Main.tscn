@@ -2,7 +2,7 @@
 
 [ext_resource path="res://scripts/Main.cs" type="Script" id=1]
 [ext_resource path="res://scenes/Cell.tscn" type="PackedScene" id=2]
-[ext_resource path="res://scenes/RoomTemplates.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scenes/CellTemplates.tscn" type="PackedScene" id=3]
 [ext_resource path="res://scenes/cells/StartingCell.tscn" type="PackedScene" id=4]
 
 [node name="Main" type="Node"]
@@ -11,7 +11,7 @@ ExpectedNumberOfRooms = 6
 CellTemplate = ExtResource( 2 )
 StartingCell = ExtResource( 4 )
 
-[node name="RoomTemplates" parent="." instance=ExtResource( 3 )]
+[node name="CellTemplates" parent="." instance=ExtResource( 3 )]
 
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true

@@ -53,6 +53,8 @@ class Grid
     public List<Cell> GetNeighbours(Cell cell)
     {
         List<Cell> neighbours = new List<Cell>(cell.generatedNeighbourCount);
+
+        // TODO: fix bug, when trying getting neighbours of dead end cell on the edge, function gives null.
         if (!Coordinate.IsValidCoordinate(cell.gridCoordinate, size))
         {
             GD.PushError("Trying to get neighbours of cell {" + cell.Name + "} with invalid coordinate!");
@@ -71,6 +73,21 @@ class Grid
         }
 
         return neighbours;
+    }
+
+    public List<Cell> GetGeneratedNeighbours(Cell cell)
+    {
+        List<Cell> generatedNeighbours = new List<Cell>();
+
+        foreach (Cell neighbour in GetNeighbours(cell))
+        {
+            if (neighbour.isGenerated)
+            {
+                generatedNeighbours.Add(neighbour);
+            }
+        }
+
+        return generatedNeighbours;
     }
 
     public bool IsEmpty()

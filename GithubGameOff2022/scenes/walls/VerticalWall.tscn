@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 4, 256 )
+
+[node name="VerticalWall" type="Polygon2D"]
+position = Vector2( 512, -224 )
+rotation = 1.5708
+scale = Vector2( 32, 0.0625 )
+color = Color( 0.160784, 0.223529, 0.160784, 1 )
+polygon = PoolVector2Array( 15, 0, 7, 0, 7, 512, 15, 512, 15, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Area2D" type="Area2D" parent="."]
+visible = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2( 11, 256 )
+shape = SubResource( 1 )

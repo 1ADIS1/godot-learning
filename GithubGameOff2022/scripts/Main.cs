@@ -14,24 +14,27 @@ public class Main : Node
     [Export]
     private int columnDrawStep = 20;
 
-    // Sufficient number of rooms to generate.
+    // TODO: Sufficient number of rooms to generate.
     [Export] public int ExpectedNumberOfRooms = 16;
 
+    [Export] public int SecretRoomChance = 50;
+
     // Queue of generated rooms.
-    public Queue<Cell> rooms = new Queue<Cell>();
+    // TODO: make class "Level", which will contain rooms and other stuff.
+    public List<Room> rooms = new List<Room>();
 
     // Cell to instantiate
-    [Export]
-    public PackedScene CellTemplate;
+    [Export] public PackedScene CellTemplate;
 
-    [Export]
-    public PackedScene StartingCell;
+    [Export] public PackedScene StartingCell;
 
     private Grid _map;
 
-    private RoomTemplates _roomTemplates;
+    private CellTemplates _cellTemplates;
 
     private int _startingCellIndex;
+
+    private List<Coordinate> _secretCells = new List<Coordinate>();
 
     private int _currentRoomsNumber;
 
@@ -41,7 +44,7 @@ public class Main : Node
     public override void _Ready()
     {
         // TODO: refactor searching for room templates
-        _roomTemplates = GetChild<RoomTemplates>(0);
+        _cellTemplates = GetChild<CellTemplates>(0);
 
         GenerateMap();
 
@@ -51,9 +54,18 @@ public class Main : Node
             GetTree().ReloadCurrentScene();
         }
 
-        PrintRooms();
+        // Mark first room as current, last room as boss room
+        // TODO: prevent boss room spawning adjacent to the starting cell.
+        // TODO: prevent boss room spawning near secret room.
+        // TODO: rework this.
+        _map.cells[_startingCellIndex].AddChild(_cellTemplates.CurrentCell.Instance<Sprite>());
+        _map.cells[_map.CoordinateToIndex(rooms[rooms.Count - 1].GridCell.gridCoordinate)].AddChild(_cellTemplates.BossCell.Instance<Sprite>());
+        rooms[rooms.Count - 1].IntRoomType = 4;
 
         // Generated rooms with one neighbour with chance 50/50 becomes *special room*.
+        GenerateSecretRooms();
+
+        PrintRooms();
 
         // If the cell with one neighbour is not dead end, then spawn secret room adjacent to it. 
     }
@@ -61,9 +73,9 @@ public class Main : Node
     public void PrintRooms()
     {
         GD.Print("\n-------------------------------------------------------------------\n");
-        foreach (Cell cell in rooms)
+        foreach (Room room in rooms)
         {
-            GD.Print("Room: ", cell.Name, " with ", cell.generatedNeighbourCount, " neighbours was added to the queue.");
+            GD.Print("Room: ", room.GridCell.Name, " with type ", (RoomType)room.IntRoomType, " and ", room.GridCell.generatedNeighbourCount, " neighbours was added to the queue.");
         }
         GD.Print("\n-------------------------------------------------------------------\n");
     }
@@ -82,7 +94,7 @@ public class Main : Node
 
     private void GenerateMap()
     {
-        _map = new Grid(GridSize, _roomTemplates.EmptyCell);
+        _map = new Grid(GridSize, _cellTemplates.EmptyCell);
 
         DrawStageMap();
 
@@ -90,6 +102,21 @@ public class Main : Node
 
         // Iterate through each cell that has neighbours and instantiate them.
         GenerateNeighbours(_map.cells[_startingCellIndex]);
+    }
+
+    private void GenerateSecretRooms()
+    {
+        if (_secretCells.Count == 0)
+        {
+            GD.PushWarning("No secret rooms was generated!");
+            return;
+        }
+
+        foreach (Coordinate secretCoordinate in _secretCells)
+        {
+            _map.cells[_map.CoordinateToIndex(secretCoordinate)].AddChild(_cellTemplates.SecretCell.Instance<Sprite>());
+            // TODO: set room type in the rooms list
+        }
     }
 
     private void DrawStageMap()
@@ -169,8 +196,21 @@ public class Main : Node
         nodeToRemove.QueueFree();
 
         AddChild(cell);
-        rooms.Enqueue(cell);
-        GD.Print("Added child with name ", cell.Name, " and neighbour count", cell.generatedNeighbourCount);
+        AddRoom(cell);
+        // GD.Print("Added child with name ", cell.Name, " and neighbour count", cell.generatedNeighbourCount);
+    }
+
+    private void AddRoom(Cell cell)
+    {
+        if (!cell.isGenerated)
+        {
+            GD.PushError("Trying to add non-generated cell to rooms list!");
+            return;
+        }
+
+        Room room = new Room((int)RoomType.DEFAULT, cell);
+
+        rooms.Add(room);
     }
 
     // Replaces middle cell in the grid with starting cell and fills in starting cell index;
@@ -202,7 +242,7 @@ public class Main : Node
     // TODO: adjacent cells should have entrances to each other.
     private void GenerateNeighbours(Cell cell)
     {
-        if (_roomTemplates == null)
+        if (_cellTemplates == null)
         {
             GD.PushError("Trying to generate cells with empty room templates class!");
             return;
@@ -213,10 +253,10 @@ public class Main : Node
         }
 
         PackedScene[][] cellsWithEntrances = {
-            _roomTemplates.BottomEntranceRooms,
-            _roomTemplates.LeftEntranceRooms,
-            _roomTemplates.TopEntranceRooms,
-            _roomTemplates.RightEntranceRooms
+            _cellTemplates.BottomEntranceCells,
+            _cellTemplates.LeftEntranceCells,
+            _cellTemplates.TopEntranceCells,
+            _cellTemplates.RightEntranceCells
         };
 
         Random random = new Random();
@@ -250,17 +290,29 @@ public class Main : Node
                 continue;
             }
 
-            // If cellToPlace has more than one generated neighbour, give up.
-            if (!MoreThanOneNeighbourGenerationCheck(cellToPlace))
-            {
-                continue;
-            }
-
             // If we already have enough rooms, give up.
             // if (_currentRoomsNumber >= ExpectedNumberOfRooms)
             // {
             //     continue;
             // }
+
+            // If coordinateToPlace is on the edge - replace chosen cell with the dead end.
+            if (Coordinate.CheckIfEdge(coordinateToPlace, GridSize))
+            {
+                cellToPlace = _cellTemplates.DeadEndCells[index].Instance<Cell>();
+                cellToPlace.gridCoordinate = coordinateToPlace;
+            }
+
+            // If cellToPlace has more than one generated neighbour, give up.
+            // TODO: with 50% chance spawn instead secret room.
+            if (!MoreThanOneNeighbourGenerationCheck(cellToPlace))
+            {
+                //TODO: spawn secret room with only entrances to the adjacent cells
+                if (!TryGenerateSecretCell(cellToPlace))
+                {
+                    continue;
+                }
+            }
 
             // Otherwise, mark the neighbour cell as having a room in it, and add it to the queue.
             SetExistingMapCell(cellToPlace, coordinateToPlace);
@@ -268,24 +320,94 @@ public class Main : Node
         }
     }
 
-    private bool MoreThanOneNeighbourGenerationCheck(Cell cellToPlace)
+    // TODO: add exceptions.
+    // TODO: refactor this bloody chaos.
+    // TODO: fix bug when secrets are not generating.
+    // Secret room cannot be generate with only one neighbour.
+    // Secret room might be generated with 50% chance
+    private bool TryGenerateSecretCell(Cell cell)
     {
-        var cellToPlaceNeigbours = _map.GetNeighbours(cellToPlace);
-        int generatedNeighboursCount = 0;
-        if (cellToPlaceNeigbours == null)
+        // if (!Utils.Chance(SecretRoomChance))
+        // {
+        //     return false;
+        // }
+
+        GD.Print("Cell, ", cell.gridCoordinate, " trying to become a secret room.");
+
+        Coordinate secretRoomCoordinate = cell.gridCoordinate;
+        List<Cell> secretCellNeighbours = _map.GetGeneratedNeighbours(cell);
+        int secretCellEntrances = 0;
+        int entrancesNumber = 0;
+
+        if (secretCellNeighbours == null || secretCellNeighbours.Count < 2)
+        {
+            GD.Print("Not enough neighbours for secret room!");
+            return false;
+        }
+
+        // Create entrances for secret room.
+        foreach (Cell neighbour in secretCellNeighbours)
+        {
+            // If neighbour is on the top of the current cell and has entrance to bottom, 
+            // then add entrance to the top.
+            if (neighbour.gridCoordinate.Equals(cell.gridCoordinate.Top()) && Utils.IsBitEnabled(neighbour.Entrances, 2))
+            {
+                secretCellEntrances = Utils.EnableBit(secretCellEntrances, 0);
+                entrancesNumber++;
+            }
+            else if (neighbour.gridCoordinate.Equals(cell.gridCoordinate.Bottom()) && Utils.IsBitEnabled(neighbour.Entrances, 0))
+            {
+                secretCellEntrances = Utils.EnableBit(secretCellEntrances, 2);
+                entrancesNumber++;
+            }
+            else if (neighbour.gridCoordinate.Equals(cell.gridCoordinate.Right()) && Utils.IsBitEnabled(neighbour.Entrances, 3))
+            {
+                secretCellEntrances = Utils.EnableBit(secretCellEntrances, 1);
+                entrancesNumber++;
+            }
+            else if (neighbour.gridCoordinate.Equals(cell.gridCoordinate.Left()) && Utils.IsBitEnabled(neighbour.Entrances, 1))
+            {
+                secretCellEntrances = Utils.EnableBit(secretCellEntrances, 3);
+                entrancesNumber++;
+            }
+            else
+            { // TODO: get rid? Prevents spawning secrets with no entrance to some cells.
+                return false;
+            }
+        }
+
+        if (entrancesNumber < 2)
         {
             return false;
         }
 
-        foreach (Cell neighbour in cellToPlaceNeigbours)
+        // Choose a cell with exact entrances as we defined.
+        PackedScene[][] entrances = {
+            _cellTemplates.OneEntranceCells,
+            _cellTemplates.TwoEntranceCells,
+            _cellTemplates.ThreeEntranceCells,
+            _cellTemplates.FourEntranceCells
+        };
+
+        // Take random corresponding cell in range [0, cells.Length - 1).
+        Random random = new Random();
+        cell = entrances[entrancesNumber - 1][random.Next(0, entrances[entrancesNumber - 1].Length)].Instance<Cell>();
+        cell.gridCoordinate = secretRoomCoordinate;
+
+        _secretCells.Add(cell.gridCoordinate);
+
+        return true;
+    }
+
+    private bool MoreThanOneNeighbourGenerationCheck(Cell cellToPlace)
+    {
+        List<Cell> generatedNeighbours = _map.GetGeneratedNeighbours(cellToPlace);
+        if (generatedNeighbours == null || generatedNeighbours.Count == 0)
         {
-            if (!neighbour.isGenerated)
-            {
-                continue;
-            }
-            generatedNeighboursCount++;
+            return false;
         }
-        if (cellToPlaceNeigbours != null && generatedNeighboursCount > 1)
+
+        if (generatedNeighbours.Count > 1)
         {
             return false;
         }

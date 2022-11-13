@@ -37,7 +37,7 @@ public class Coordinate
     }
 
     // Checks if the given coordinate is located on the edge of the map, either on x or y.
-    public bool CheckIfEdge(Coordinate coordinate, int gridSize)
+    public static bool CheckIfEdge(Coordinate coordinate, int gridSize)
     {
         if (coordinate.x == 0 || coordinate.x == gridSize - 1 ||
             coordinate.y == 0 || coordinate.y == gridSize - 1)
@@ -66,5 +66,15 @@ public class Coordinate
     public Coordinate Left()
     {
         return new Coordinate(x - 1, y);
+    }
+
+    public override bool Equals(object obj)
+    {
+        Coordinate coordinate = (Coordinate)obj;
+        if (coordinate == null)
+        {
+            throw new System.Exception("Error casting object to class Coordinate");
+        }
+        return x == coordinate.x && y == coordinate.y;
     }
 }

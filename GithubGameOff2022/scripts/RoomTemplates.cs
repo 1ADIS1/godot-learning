@@ -15,7 +15,7 @@ public class RoomTemplates : Node
     [Export]
     public PackedScene[] LeftEntranceRooms;
     [Export]
-    public PackedScene[] DeadEnds;
+    public PackedScene[] DeadEnds; // Should be arranged like: bottom, left, top, right.
 
     // Room templates
 }

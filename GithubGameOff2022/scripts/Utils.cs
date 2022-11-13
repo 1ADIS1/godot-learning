@@ -19,6 +19,16 @@ public static class Utils
         return (bitMask & (1 << index)) != 0;
     }
 
+    public static int EnableBit(int bitMask, int index)
+    {
+        return bitMask | (1 << index);
+    }
+
+    // public static int DisableBit(int bitMask, int index)
+    // {
+    //     return true;
+    // }
+
     /**
     Takes integer in the interval from [0, 100].
     

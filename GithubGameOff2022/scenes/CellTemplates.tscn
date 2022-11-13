@@ -1,0 +1,37 @@
+[gd_scene load_steps=20 format=2]
+
+[ext_resource path="res://scripts/CellTemplates.cs" type="Script" id=1]
+[ext_resource path="res://scenes/cells/three_entrances/TBL.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/cells/one_entrance/R.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scenes/cells/three_entrances/TRL.tscn" type="PackedScene" id=4]
+[ext_resource path="res://scenes/cells/two_entrances/TR.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/cells/one_entrance/T.tscn" type="PackedScene" id=6]
+[ext_resource path="res://scenes/cells/EmptyCell.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/cells/two_entrances/RB.tscn" type="PackedScene" id=8]
+[ext_resource path="res://scenes/cells/one_entrance/L.tscn" type="PackedScene" id=9]
+[ext_resource path="res://scenes/cells/three_entrances/RBL.tscn" type="PackedScene" id=10]
+[ext_resource path="res://scenes/cells/three_entrances/TRB.tscn" type="PackedScene" id=11]
+[ext_resource path="res://scenes/cells/two_entrances/TB.tscn" type="PackedScene" id=12]
+[ext_resource path="res://scenes/cells/one_entrance/B.tscn" type="PackedScene" id=13]
+[ext_resource path="res://scenes/cells/two_entrances/TL.tscn" type="PackedScene" id=14]
+[ext_resource path="res://scenes/cells/two_entrances/BL.tscn" type="PackedScene" id=15]
+[ext_resource path="res://scenes/cells/BossCell.tscn" type="PackedScene" id=16]
+[ext_resource path="res://scenes/cells/CurrentCell.tscn" type="PackedScene" id=17]
+[ext_resource path="res://scenes/cells/SecretCell.tscn" type="PackedScene" id=18]
+[ext_resource path="res://scenes/cells/StartingCell.tscn" type="PackedScene" id=19]
+
+[node name="CellTemplates" type="Node"]
+script = ExtResource( 1 )
+EmptyCell = ExtResource( 7 )
+TopEntranceCells = [ ExtResource( 6 ), ExtResource( 2 ), ExtResource( 11 ), ExtResource( 4 ), ExtResource( 12 ), ExtResource( 14 ), ExtResource( 5 ) ]
+RightEntranceCells = [ ExtResource( 3 ), ExtResource( 10 ), ExtResource( 11 ), ExtResource( 4 ), ExtResource( 8 ), ExtResource( 5 ) ]
+BottomEntranceCells = [ ExtResource( 13 ), ExtResource( 10 ), ExtResource( 2 ), ExtResource( 11 ), ExtResource( 15 ), ExtResource( 8 ), ExtResource( 12 ) ]
+LeftEntranceCells = [ ExtResource( 9 ), ExtResource( 10 ), ExtResource( 2 ), ExtResource( 4 ), ExtResource( 15 ), ExtResource( 14 ) ]
+OneEntranceCells = [ ExtResource( 13 ), ExtResource( 9 ), ExtResource( 3 ), ExtResource( 6 ) ]
+TwoEntranceCells = [ ExtResource( 15 ), ExtResource( 8 ), ExtResource( 12 ), ExtResource( 14 ), ExtResource( 5 ) ]
+ThreeEntranceCells = [ ExtResource( 10 ), ExtResource( 2 ), ExtResource( 11 ), ExtResource( 4 ) ]
+FourEntranceCells = [ ExtResource( 19 ) ]
+DeadEndCells = [ ExtResource( 13 ), ExtResource( 9 ), ExtResource( 6 ), ExtResource( 3 ) ]
+CurrentCell = ExtResource( 17 )
+BossCell = ExtResource( 16 )
+SecretCell = ExtResource( 18 )
