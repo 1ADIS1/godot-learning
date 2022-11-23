@@ -1,24 +1,28 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://scripts/Door.cs" type="Script" id=1]
+[ext_resource path="res://art/default_door.png" type="Texture" id=2]
 
-[sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 32, 16 )
+[sub_resource type="SegmentShape2D" id=1]
+a = Vector2( 11, 11 )
+b = Vector2( -7, 11 )
 
-[node name="Door" type="Node2D"]
+[node name="Door" type="Sprite"]
+texture = ExtResource( 2 )
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_group_": true
 }
 
-[node name="Polygon2D" type="Polygon2D" parent="."]
-scale = Vector2( 2, 2 )
-color = Color( 0.839216, 0.564706, 0.294118, 1 )
-polygon = PoolVector2Array( 16, 0, 16, 16, 0, 16, -16, 16, -16, 0 )
+[node name="EnterZone" type="Area2D" parent="."]
 
-[node name="Area2D" type="Area2D" parent="."]
-visible = false
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2( 0, 16 )
+[node name="DoorArea" type="CollisionShape2D" parent="EnterZone"]
+position = Vector2( -2, 0 )
 shape = SubResource( 1 )
+
+[node name="MainCollision" type="Area2D" parent="."]
+
+[node name="DoorCollision" type="CollisionPolygon2D" parent="MainCollision"]
+position = Vector2( -8.88929, 16.9937 )
+scale = Vector2( 0.270089, 0.215625 )
+polygon = PoolVector2Array( -11.5174, -4.60869, -37.4347, -41.7101, -37.4347, -64.8985, -18.9223, -88.087, 84.7471, -88.087, 103.26, -64.8985, 103.26, -41.7101, 77.3421, -4.60869, 58.8298, -4.60869, 73.6397, -37.0725, 84.7471, -55.6232, 72.8685, -69.5362, -4.1124, -69.5362, -22.6248, -55.6232, -15.2198, -50.9855, 6.99504, -4.60869 )

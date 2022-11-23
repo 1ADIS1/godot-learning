@@ -77,4 +77,9 @@ public class Coordinate
         }
         return x == coordinate.x && y == coordinate.y;
     }
+
+    public override int GetHashCode()
+    {
+        return (x, y).GetHashCode();
+    }
 }

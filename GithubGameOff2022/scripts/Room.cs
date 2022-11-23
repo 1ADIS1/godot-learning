@@ -9,6 +9,8 @@ public class Room : Node
     [Export(PropertyHint.Flags, "Top,Right,Bottom,Left")]
     public int Entrances;
 
+    // public Door door;
+
     public Cell GridCell;
 
     public Room() { }

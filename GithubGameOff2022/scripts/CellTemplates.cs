@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public class CellTemplates : Node
 {
@@ -20,4 +21,32 @@ public class CellTemplates : Node
     [Export] public PackedScene CurrentCell;
     [Export] public PackedScene BossCell;
     [Export] public PackedScene SecretCell;
+
+    /**
+    Gets mapped entrances flags to name and returns the cells with the entrances specified in the mappedName.
+    */
+    // TODO: 
+    public Cell GetDesiredEntranceCell(int entrances)
+    {
+        PackedScene[][] cellsWithEntrances = {
+            BottomEntranceCells,
+            LeftEntranceCells,
+            TopEntranceCells,
+            RightEntranceCells
+        };
+
+        foreach (PackedScene[] scenes in cellsWithEntrances)
+        {
+            foreach (PackedScene scene in scenes)
+            {
+                Cell cell = scene.Instance<Cell>();
+                if (cell.Entrances == entrances)
+                {
+                    return cell;
+                }
+            }
+        }
+
+        return null;
+    }
 }
