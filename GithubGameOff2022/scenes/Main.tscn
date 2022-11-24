@@ -17,11 +17,12 @@ StartingCell = ExtResource( 4 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
-zoom = Vector2( 0.3, 0.3 )
+zoom = Vector2( 5, 5 )
 
 [node name="RoomGenerator" parent="." instance=ExtResource( 5 )]
 
 [node name="Player" parent="." instance=ExtResource( 6 )]
 position = Vector2( 144, 96 )
+Speed = 77.0
 
 [connection signal="CellsReady" from="." to="RoomGenerator" method="_on_Main_CellsReady"]

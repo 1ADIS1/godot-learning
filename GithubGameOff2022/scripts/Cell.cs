@@ -22,4 +22,25 @@ public class Cell : Sprite
     {
         return Entrances > 0x0;
     }
+
+    public static String MapEntrancesToName(int entrances)
+    {
+        if (entrances < 0 || entrances > 15)
+        {
+            GD.PushError("Error mapping entrances to name!");
+            return null;
+        }
+        String name = "";
+
+        String[] letters = { "L", "B", "R", "T" };
+        for (int index = 0; index < 4; index++)
+        {
+            if (Utils.IsBitEnabled(entrances, index))
+            {
+                name += letters[index];
+            }
+        }
+
+        return name;
+    }
 }

@@ -99,7 +99,7 @@ public class Main : Node
         // Generate real map!
         EmitSignal(nameof(CellsReady), rooms);
 
-        CenterCamera();
+        PositionPlayerAndCamera();
     }
 
     public void PrintRooms()
@@ -165,9 +165,10 @@ public class Main : Node
         }
     }
 
-    // TODO: refactor.
-    private void CenterCamera()
+    private void PositionPlayerAndCamera()
     {
+        GD.Print("Centering the player and camera...");
+
         Camera2D camera = GetNodeOrNull<Camera2D>("Camera2D");
         if (camera == null)
         {
@@ -175,7 +176,12 @@ public class Main : Node
             return;
         }
 
-        camera.Position = new Vector2(145f, 90f);
+        Player player = GetNode<Player>("Player");
+        RoomGenerator roomGenerator = GetNode<RoomGenerator>("RoomGenerator");
+        Coordinate startingCellCoordinates = _map.cells[_startingCellIndex].gridCoordinate;
+
+        player.GlobalPosition = roomGenerator.GetRoomWorldCoordinates(startingCellCoordinates) + roomGenerator.roomCenterOffset;
+        camera.GlobalPosition = player.GlobalPosition;
     }
 
     private void CreateMapCell(Cell cell)
@@ -422,7 +428,7 @@ public class Main : Node
         Cell desiredCell = _cellTemplates.GetDesiredEntranceCell(secretCellEntrances);
         if (desiredCell == null)
         {
-            GD.PushError("Failed to find a cell with entrances: " + MapEntrancesToName(secretCellEntrances));
+            GD.PushError("Failed to find a cell with entrances: " + Cell.MapEntrancesToName(secretCellEntrances));
             return false;
         }
 
@@ -433,27 +439,6 @@ public class Main : Node
         _secretCells.Add(cell.gridCoordinate);
 
         return true;
-    }
-
-    private String MapEntrancesToName(int entrances)
-    {
-        if (entrances < 0 || entrances > 15)
-        {
-            GD.PushError("Error mapping entrances to name!");
-            return null;
-        }
-        String name = "";
-
-        String[] letters = { "L", "B", "R", "T" };
-        for (int index = 0; index < 4; index++)
-        {
-            if (Utils.IsBitEnabled(entrances, index))
-            {
-                name += letters[index];
-            }
-        }
-
-        return name;
     }
 
     private bool MoreThanOneNeighbourGenerationCheck(Cell cellToPlace)

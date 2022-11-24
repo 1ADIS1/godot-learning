@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class Room : Node
+public class Room : Node2D
 {
     [Export(PropertyHint.Range, "-1,4,1")]
     public int IntRoomType;

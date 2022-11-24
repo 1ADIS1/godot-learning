@@ -82,4 +82,7 @@ public class Coordinate
     {
         return (x, y).GetHashCode();
     }
+
+    public static Coordinate operator *(Coordinate coordinate, int multiplier)
+        => new Coordinate(coordinate.x * multiplier, coordinate.y * multiplier);
 }

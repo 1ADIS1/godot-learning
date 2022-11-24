@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 public class RoomGenerator : Node
 {
+    [Export] public int StepSizeX = 300;
+    [Export] public int StepSizeY = 200;
+
+    public Vector2 roomCenterOffset = new Vector2(144f, 96f);
+
     private RoomTemplates _roomTemplates;
 
     public void _on_Main_CellsReady(List<Room> rooms)
@@ -16,17 +21,32 @@ public class RoomGenerator : Node
 
         foreach (Room room in rooms)
         {
-            // Spawn corresponding room from room templates.
-            switch ((RoomType)room.IntRoomType)
-            {
-                case RoomType.NULL:
-                    break;
-                case RoomType.DEFAULT:
+            InstantiateRoom(room);
+        }
+    }
 
-                    break;
-            }
+    private void InstantiateRoom(Room room)
+    {
+        if (room == null)
+        {
+            GD.PushError("Trying to instantiate room == null!");
+            return;
         }
 
-        AddChild(_roomTemplates.FourEntranceRooms[0].Instance<Room>());
+        switch ((RoomType)room.IntRoomType)
+        {
+            case RoomType.NULL:
+                break;
+            case RoomType.DEFAULT:
+                Node2D instantiatedRoom = _roomTemplates.FourEntranceRooms[0].Instance<Node2D>();
+                instantiatedRoom.GlobalPosition = GetRoomWorldCoordinates(room.GridCell.gridCoordinate);
+                AddChild(instantiatedRoom);
+                break;
+        }
+    }
+
+    public Vector2 GetRoomWorldCoordinates(Coordinate coordinate)
+    {
+        return new Vector2(coordinate.x * StepSizeX, coordinate.y * StepSizeY);
     }
 }
