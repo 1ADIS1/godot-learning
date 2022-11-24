@@ -36,8 +36,6 @@ public enum RoomType
 {
     NULL = -1,
     DEFAULT = 0,
-    TREASURE = 1,
-    SECRET = 2,
-    SHOP = 3,
-    BOSS = 4
+    SECRET = 1,
+    BOSS = 2
 }

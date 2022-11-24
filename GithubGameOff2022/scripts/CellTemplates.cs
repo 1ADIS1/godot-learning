@@ -23,9 +23,8 @@ public class CellTemplates : Node
     [Export] public PackedScene SecretCell;
 
     /**
-    Gets mapped entrances flags to name and returns the cells with the entrances specified in the mappedName.
+    returns the cell with the given entrances.
     */
-    // TODO: 
     public Cell GetDesiredEntranceCell(int entrances)
     {
         PackedScene[][] cellsWithEntrances = {

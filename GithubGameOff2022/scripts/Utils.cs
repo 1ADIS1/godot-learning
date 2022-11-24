@@ -24,6 +24,20 @@ public static class Utils
         return bitMask | (1 << index);
     }
 
+    public static int CountEnabledBits(int bitmask)
+    {
+        int number = 0;
+        for (int index = 0; index < bitmask.ToString().Length; index++)
+        {
+            if (IsBitEnabled(bitmask, index))
+            {
+                number++;
+            }
+        }
+
+        return number;
+    }
+
     // public static int DisableBit(int bitMask, int index)
     // {
     //     return true;
