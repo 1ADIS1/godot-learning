@@ -23,6 +23,7 @@ public class Room : Node2D
         }
 
         this.IntRoomType = roomType;
+        this.Entrances = gridCell.Entrances;
         this.GridCell = gridCell;
     }
 

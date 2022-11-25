@@ -26,6 +26,7 @@ public class RoomGenerator : Node
 
         foreach (Room room in rooms)
         {
+            GD.Print("Trying to instantiate room with entrances: ", Cell.MapEntrancesToName(room.Entrances));
             InstantiateRoom(room);
         }
     }
@@ -42,13 +43,16 @@ public class RoomGenerator : Node
         }
 
         List<Room> correspondingTypeAndEntrancesRoom = _roomTemplates.GetDesiredRooms(room.Entrances, room.IntRoomType);
-        if (correspondingTypeAndEntrancesRoom == null)
+        if (correspondingTypeAndEntrancesRoom == null || correspondingTypeAndEntrancesRoom.Count == 0)
         {
             GD.PushError("Failed to find room with type " + (RoomType)room.IntRoomType + " and entrances " + Cell.MapEntrancesToName(room.Entrances));
+            return;
         }
 
         // Pick random room.
         Random random = new Random();
+        GD.Print("Index of chosen room: " + random.Next(0, correspondingTypeAndEntrancesRoom.Count));
+        GD.Print("Count of corresponding rooms with type " + (RoomType)room.IntRoomType + " is " + correspondingTypeAndEntrancesRoom.Count);
         Room roomToInstantiate = correspondingTypeAndEntrancesRoom[random.Next(0, correspondingTypeAndEntrancesRoom.Count)];
 
         roomToInstantiate.GlobalPosition = GetRoomWorldCoordinates(room.GridCell.gridCoordinate);

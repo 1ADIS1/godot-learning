@@ -13,11 +13,6 @@ public class Cell : Sprite
 
     public bool isGenerated = false;
 
-    public override void _Ready()
-    {
-        GD.Print(Entrances);
-    }
-
     public bool HasEntrances()
     {
         return Entrances > 0x0;
@@ -32,13 +27,18 @@ public class Cell : Sprite
         }
         String name = "";
 
-        String[] letters = { "L", "B", "R", "T" };
+        String[] letters = { "T", "R", "B", "L" };
         for (int index = 0; index < 4; index++)
         {
             if (Utils.IsBitEnabled(entrances, index))
             {
                 name += letters[index];
             }
+        }
+
+        if (name == "")
+        {
+            return "NONE";
         }
 
         return name;

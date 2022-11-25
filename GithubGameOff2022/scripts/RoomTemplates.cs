@@ -17,6 +17,12 @@ public class RoomTemplates : Node
             BossRooms
         };
 
+        if (roomType > roomTypes.Length)
+        {
+            GD.PushError("Incorrect room type: " + (RoomType)roomType);
+            return null;
+        }
+
         foreach (PackedScene packedScene in roomTypes[roomType])
         {
             Room room = packedScene.Instance<Room>();

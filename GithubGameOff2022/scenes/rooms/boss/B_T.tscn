@@ -4,24 +4,13 @@
 [ext_resource path="res://scenes/rooms/SecretRoomBase.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scripts/Room.cs" type="Script" id=3]
 
-[node name="S_TRBL" type="Node2D"]
+[node name="B_T" type="Node2D"]
 script = ExtResource( 3 )
-IntRoomType = 1
-Entrances = 15
+IntRoomType = 2
+Entrances = 1
 
 [node name="RoomBase" parent="." instance=ExtResource( 2 )]
+modulate = Color( 0.843137, 0.568627, 0.568627, 1 )
 
 [node name="TopDoor" parent="." instance=ExtResource( 1 )]
 position = Vector2( 144, 16 )
-
-[node name="RightDoor" parent="." instance=ExtResource( 1 )]
-position = Vector2( 272, 96 )
-rotation = 1.5708
-
-[node name="BottomDoor2" parent="." instance=ExtResource( 1 )]
-position = Vector2( 144, 176 )
-rotation = -3.14159
-
-[node name="LeftDoor" parent="." instance=ExtResource( 1 )]
-position = Vector2( 16, 96 )
-rotation = -1.5708

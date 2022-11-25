@@ -78,7 +78,7 @@ public class Main : Node
             {
                 int index = _map.CoordinateToIndex(coordinate);
                 _map.cells[index].generatedNeighbourCount = _map.GetGeneratedNeighbours(_map.cells[index]).Count;
-                GD.Print("Generating secret room ", coordinate, " with neighbour count ", _map.cells[index].generatedNeighbourCount);
+                //GD.Print("Generating secret room ", coordinate, " with neighbour count ", _map.cells[index].generatedNeighbourCount);
                 if (_map.cells[index].generatedNeighbourCount > 1 && !_map.cells[index].isGenerated)
                 {
                     if (!GenerateSecretCell(_map.cells[index])) // TODO: num of secrets
@@ -242,7 +242,6 @@ public class Main : Node
 
         AddChild(cell);
         AddRoom(cell);
-        // GD.Print("Added child with name ", cell.Name, " and neighbour count", cell.generatedNeighbourCount);
     }
 
     private void ReplaceCell(Cell cell)

@@ -86,6 +86,7 @@ ui_down={
 2d_physics/layer_2="GridCell"
 2d_physics/layer_3="Entities"
 2d_physics/layer_4="Obstacles"
+2d_physics/layer_5="Interactable"
 
 [mono]
 
