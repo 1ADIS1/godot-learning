@@ -49,8 +49,11 @@ class Grid
 
     /**
     Returns adjacent cells (4 max).
+
+    If onlyGeneratedNeighbours is true - returns cells, 
+    which were generated in the grid and are adjacent to the current one.
     */
-    public List<Cell> GetNeighbours(Cell cell)
+    public List<Cell> GetNeighbours(Cell cell, bool onlyGeneratedNeighbours = false)
     {
         List<Cell> neighbours = new List<Cell>(cell.generatedNeighbourCount);
 
@@ -68,26 +71,21 @@ class Grid
             {
                 continue;
             }
+
             Cell neighbour = cells[CoordinateToIndex(adjacentCoordinate)];
-            neighbours.Add(neighbour);
-        }
 
-        return neighbours;
-    }
+            if (!onlyGeneratedNeighbours)
+            {
+                neighbours.Add(neighbour);
+            }
 
-    public List<Cell> GetGeneratedNeighbours(Cell cell)
-    {
-        List<Cell> generatedNeighbours = new List<Cell>();
-
-        foreach (Cell neighbour in GetNeighbours(cell))
-        {
             if (neighbour.isGenerated)
             {
-                generatedNeighbours.Add(neighbour);
+                neighbours.Add(neighbour);
             }
         }
 
-        return generatedNeighbours;
+        return neighbours;
     }
 
     public bool IsEmpty()

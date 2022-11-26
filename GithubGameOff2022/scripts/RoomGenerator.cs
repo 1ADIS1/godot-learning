@@ -33,7 +33,7 @@ public class RoomGenerator : Node
 
     /*
      Instantiates random room with the same type and entrances in world coordinates.
-     */
+    */
     private void InstantiateRoom(Room room)
     {
         if (room == null)
@@ -57,6 +57,22 @@ public class RoomGenerator : Node
 
         roomToInstantiate.GlobalPosition = GetRoomWorldCoordinates(room.GridCell.gridCoordinate);
         AddChild(roomToInstantiate);
+    }
+
+    // TODO: implement 1 to 4 room tree. Each room will have up to 4 children.
+    /**
+    1) Gets adjacent rooms.
+    2) If the current room has door to the adjacent one, which has door to current:
+        link door from the current one to adjacent and do the same for the adjacent door.
+    */
+    private void LinkRoomTransitions()
+    {
+
+    }
+
+    private void RemoveDisconnectedDoors()
+    {
+
     }
 
     public Vector2 GetRoomWorldCoordinates(Coordinate coordinate)

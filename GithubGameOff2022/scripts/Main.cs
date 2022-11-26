@@ -24,27 +24,26 @@ public class Main : Node
 
     // Queue of generated rooms.
     // TODO: make class "Level", which will contain rooms and other stuff.
-    public List<Room> rooms = new List<Room>();
+    public Room startingRoom;
 
     // Cell to instantiate
     [Export] public PackedScene CellTemplate;
 
     [Export] public PackedScene StartingCell;
 
+    private int _mapRadius = 0;
     private Grid _map;
 
     private CellTemplates _cellTemplates;
 
     private int _startingCellIndex;
+    private int _bossCellIndex;
 
     private List<Coordinate> possiblePlacesForSecretCells = new List<Coordinate>();
     private List<Coordinate> _secretCells = new List<Coordinate>();
 
     private int _currentRoomsNumber;
 
-    //TODO: max hand size
-
-    // TODO: current room is filled with blue animated polygon.
     public override void _Ready()
     {
         // TODO: refactor searching for room templates
@@ -58,15 +57,17 @@ public class Main : Node
             GetTree().ReloadCurrentScene();
         }
 
-        // Mark first room as current, last room as boss room
-        // TODO: prevent boss room spawning adjacent to the starting cell.
-        // TODO: prevent boss room spawning near secret room.
-        // TODO: implement radius method, which will return how far the room is from the start.
-        // TODO: rework this.
+        // Mark starting room.
         _map.cells[_startingCellIndex].AddChild(_cellTemplates.CurrentCell.Instance<Sprite>());
 
-        _map.cells[_map.CoordinateToIndex(rooms[rooms.Count - 1].GridCell.gridCoordinate)].AddChild(_cellTemplates.BossCell.Instance<Sprite>());
-        rooms[rooms.Count - 1].IntRoomType = 4;
+        Room farthestRoom = startingRoom;
+        CalculateMapRadius(farthestRoom, _mapRadius);
+        GD.Print("The farthest room is: ", farthestRoom);
+        GD.Print("Map radius is: ", _mapRadius);
+
+        // Find boss room.
+        _map.cells[_map.CoordinateToIndex(farthestRoom.GridCell.gridCoordinate)].AddChild(_cellTemplates.BossCell.Instance<Sprite>());
+        farthestRoom.IntRoomType = (int)RoomType.BOSS;
 
         // Generate secret rooms with neigbour more than two.
         // TODO: fix secret room generating adjacent to another secret room.
@@ -77,14 +78,17 @@ public class Main : Node
             foreach (Coordinate coordinate in possiblePlacesForSecretCells)
             {
                 int index = _map.CoordinateToIndex(coordinate);
-                _map.cells[index].generatedNeighbourCount = _map.GetGeneratedNeighbours(_map.cells[index]).Count;
+                _map.cells[index].generatedNeighbourCount = _map.GetNeighbours(_map.cells[index], true).Count;
                 //GD.Print("Generating secret room ", coordinate, " with neighbour count ", _map.cells[index].generatedNeighbourCount);
                 if (_map.cells[index].generatedNeighbourCount > 1 && !_map.cells[index].isGenerated)
                 {
                     if (!GenerateSecretCell(_map.cells[index])) // TODO: num of secrets
                     {
                         GD.Print("Secret room failed to generate");
+                        continue;
                     }
+
+                    rooms[rooms.Count - 1].IntRoomType = (int)RoomType.SECRET;
                 }
             }
         }
@@ -100,6 +104,28 @@ public class Main : Node
         EmitSignal(nameof(CellsReady), rooms);
 
         PositionPlayerAndCamera();
+    }
+
+    /**
+    returns the distance between start and the furthest room.
+    */
+    public void CalculateMapRadius(Room start, int radius)
+    {
+        if (start == null || start.HasNeighbours())
+        {
+            GD.PushError("Trying to find radius with start being null or lacking neighbours!");
+            return;
+        }
+
+        for (int i = 0; i < start.neighbours.Count; i++)
+        {
+            if (start.neighbours[i] == null)
+            {
+                return;
+            }
+
+            CalculateMapRadius(start.neighbours[i], radius++);
+        }
     }
 
     public void PrintRooms()
@@ -381,7 +407,7 @@ public class Main : Node
     private bool GenerateSecretCell(Cell cell)
     {
         // Coordinate secretRoomCoordinate = cell.gridCoordinate;
-        List<Cell> secretCellNeighbours = _map.GetGeneratedNeighbours(cell);
+        List<Cell> secretCellNeighbours = _map.GetNeighbours(cell, true);
         int secretCellEntrances = 0;
         int entrancesNumber = 0;
 
@@ -442,7 +468,7 @@ public class Main : Node
 
     private bool MoreThanOneNeighbourGenerationCheck(Cell cellToPlace)
     {
-        List<Cell> generatedNeighbours = _map.GetGeneratedNeighbours(cellToPlace);
+        List<Cell> generatedNeighbours = _map.GetNeighbours(cellToPlace, true);
         if (generatedNeighbours == null || generatedNeighbours.Count == 0)
         {
             return false;

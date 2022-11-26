@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public class Room : Node2D
 {
@@ -9,13 +10,18 @@ public class Room : Node2D
     [Export(PropertyHint.Flags, "Top,Right,Bottom,Left")]
     public int Entrances;
 
-    // public Door door;
-
     public Cell GridCell;
+
+    public List<Room> neighbours { get; } = new List<Room>() {
+        null,
+        null,
+        null,
+        null
+    };
 
     public Room() { }
 
-    public Room(int roomType, Cell gridCell)
+    public Room(int roomType, Cell gridCell, List<Room> neighbours)
     {
         if (roomType < -1 || roomType > 4)
         {
@@ -25,11 +31,22 @@ public class Room : Node2D
         this.IntRoomType = roomType;
         this.Entrances = gridCell.Entrances;
         this.GridCell = gridCell;
+        this.neighbours = neighbours;
     }
 
     public bool HasEntrances()
     {
-        return Entrances > 0x0;
+        return Entrances > 0;
+    }
+
+    public bool HasNeighbours()
+    {
+        return neighbours != null && neighbours.Count != 0;
+    }
+
+    public bool AddNeighbour()
+    {
+        return true;
     }
 }
 
