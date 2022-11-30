@@ -1,19 +1,9 @@
 using System;
+using System.Collections;
 
 // Class with useful algorithms, functions, and data structures.
-// TODO: transfer Grid class to utils ?
 public static class Utils
 {
-    // public static float findMedian()
-    // {
-    //     return 0f;
-    // }
-
-    // public static float findMean()
-    // {
-    //     return 0f;
-    // }
-
     public static bool IsBitEnabled(int bitMask, int index)
     {
         return (bitMask & (1 << index)) != 0;
@@ -38,10 +28,10 @@ public static class Utils
         return number;
     }
 
-    // public static int DisableBit(int bitMask, int index)
-    // {
-    //     return true;
-    // }
+    public static bool BitMaskIndexFormatCheck(int bitmask, int index)
+    {
+        return index >= 0 && index < bitmask && bitmask > 0;
+    }
 
     /**
     Takes integer in the interval from [0, 100].

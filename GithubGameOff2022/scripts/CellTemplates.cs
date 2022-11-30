@@ -1,7 +1,7 @@
 using Godot;
 using System;
-using System.Collections.Generic;
 
+[Obsolete("This class is obsolete, use RoomTemplates instead.")]
 public class CellTemplates : Node
 {
     [Export] public PackedScene EmptyCell;
@@ -21,31 +21,4 @@ public class CellTemplates : Node
     [Export] public PackedScene CurrentCell;
     [Export] public PackedScene BossCell;
     [Export] public PackedScene SecretCell;
-
-    /**
-    returns the cell with the given entrances.
-    */
-    public Cell GetDesiredEntranceCell(int entrances)
-    {
-        PackedScene[][] cellsWithEntrances = {
-            BottomEntranceCells,
-            LeftEntranceCells,
-            TopEntranceCells,
-            RightEntranceCells
-        };
-
-        foreach (PackedScene[] scenes in cellsWithEntrances)
-        {
-            foreach (PackedScene scene in scenes)
-            {
-                Cell cell = scene.Instance<Cell>();
-                if (cell.Entrances == entrances)
-                {
-                    return cell;
-                }
-            }
-        }
-
-        return null;
-    }
 }

@@ -1,28 +1,20 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://scripts/Main.cs" type="Script" id=1]
-[ext_resource path="res://scenes/Cell.tscn" type="PackedScene" id=2]
-[ext_resource path="res://scenes/CellTemplates.tscn" type="PackedScene" id=3]
-[ext_resource path="res://scenes/cells/TRBL.tscn" type="PackedScene" id=4]
-[ext_resource path="res://scenes/RoomGenerator.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/RoomTemplates.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/rooms/default/D_TRBL.tscn" type="PackedScene" id=3]
 [ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=6]
 
 [node name="Main" type="Node"]
 script = ExtResource( 1 )
-ExpectedNumberOfRooms = 10
-CellTemplate = ExtResource( 2 )
-StartingCell = ExtResource( 4 )
+StartingRoomScene = ExtResource( 3 )
 
-[node name="CellTemplates" parent="." instance=ExtResource( 3 )]
+[node name="RoomTemplates" parent="." instance=ExtResource( 2 )]
 
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
 zoom = Vector2( 5, 5 )
 
-[node name="RoomGenerator" parent="." instance=ExtResource( 5 )]
-
 [node name="Player" parent="." instance=ExtResource( 6 )]
 position = Vector2( 144, 96 )
 Speed = 77.0
-
-[connection signal="CellsReady" from="." to="RoomGenerator" method="_on_Main_CellsReady"]

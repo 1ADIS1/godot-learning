@@ -12,7 +12,6 @@ public class Player : KinematicBody2D
         _animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
     }
 
-    // TODO: update player's animation
     public override void _Process(float delta)
     {
         if (Input.IsActionPressed("ui_down"))

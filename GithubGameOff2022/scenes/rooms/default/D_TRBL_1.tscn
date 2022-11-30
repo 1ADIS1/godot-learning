@@ -8,28 +8,25 @@
 [node name="D_TRBL_1" type="Node2D"]
 modulate = Color( 0.533333, 0.533333, 0.533333, 1 )
 script = ExtResource( 3 )
+IntRoomType = 0
 Entrances = 15
 
 [node name="RoomBase" parent="." instance=ExtResource( 2 )]
 
 [node name="TopDoor" parent="." instance=ExtResource( 1 )]
 position = Vector2( 144, 16 )
-doorType = 1
 
 [node name="RightDoor" parent="." instance=ExtResource( 1 )]
 position = Vector2( 272, 96 )
 rotation = 1.5708
-doorType = 2
 
 [node name="BottomDoor2" parent="." instance=ExtResource( 1 )]
 position = Vector2( 144, 176 )
 rotation = -3.14159
-doorType = 4
 
 [node name="LeftDoor" parent="." instance=ExtResource( 1 )]
 position = Vector2( 16, 96 )
 rotation = -1.5708
-doorType = 8
 
 [node name="Walker" parent="." instance=ExtResource( 4 )]
 position = Vector2( 48, 48 )

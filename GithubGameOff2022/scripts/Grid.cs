@@ -1,35 +1,31 @@
 using Godot;
 using System.Collections.Generic;
-using System.Collections;
-using System;
 
 /**
-Class for generating N x N grid.
+Class for generating N x N grid of rooms.
 */
 class Grid
 {
-    public int size;
+    public int n;
 
-    public List<Cell> cells;
+    public List<Room> rooms;
 
-    public Grid(int size, PackedScene emptyCell)
+    public Grid(int n)
     {
-        this.size = size;
+        this.n = n;
 
-        cells = new List<Cell>(size * size);
+        rooms = new List<Room>(n * n);
 
-        for (int column = 0; column < size; column++)
+        for (int column = 0; column < n; column++)
         {
-            for (int row = 0; row < size; row++)
+            for (int row = 0; row < n; row++)
             {
                 Coordinate coordinate = new Coordinate(row, column);
 
-                // TODO: optimise code for creating instance of Cell scene.
-                Cell cell = emptyCell.Instance<Cell>();
-                cell.gridCoordinate = coordinate;
-                cell.Name = coordinate.x.ToString() + coordinate.y.ToString();
+                Room room = new Room(coordinate);
+                room.Name = coordinate.x.ToString() + coordinate.y.ToString();
 
-                cells.Insert(CoordinateToIndex(coordinate), cell);
+                rooms.Insert(CoordinateToIndex(coordinate), room);
             }
         }
     }
@@ -37,49 +33,48 @@ class Grid
     // TODO: check correctness of calculations.
     public int CoordinateToIndex(Coordinate coordinate)
     {
-        return coordinate.x + coordinate.y * size;
+        return coordinate.x + coordinate.y * n;
     }
 
     // TODO: check correctness of calculations.
     // TODO: If grid is not squared, then the calculations might be wrong.
     public Coordinate IndexToCoordinate(int index)
     {
-        return new Coordinate(index % size, index / size);
+        return new Coordinate(index % n, index / n);
     }
 
     /**
-    Returns adjacent cells (4 max).
+    Returns adjacent rooms (4 max).
 
-    If onlyGeneratedNeighbours is true - returns cells, 
+    If onlyGeneratedNeighbours is true - returns rooms, 
     which were generated in the grid and are adjacent to the current one.
     */
-    public List<Cell> GetNeighbours(Cell cell, bool onlyGeneratedNeighbours = false)
+    public List<Room> GetNeighbours(Room room, bool onlyGeneratedNeighbours = false)
     {
-        List<Cell> neighbours = new List<Cell>(cell.generatedNeighbourCount);
+        List<Room> neighbours = new List<Room>(room.generatedNeighbourCount);
 
-        // TODO: fix bug, when trying getting neighbours of dead end cell on the edge, function gives null.
-        if (!Coordinate.IsValidCoordinate(cell.gridCoordinate, size))
+        if (!Coordinate.IsValidCoordinate(room.coordinate, n))
         {
-            GD.PushError("Trying to get neighbours of cell {" + cell.Name + "} with invalid coordinate!");
+            GD.PushError("Trying to get neighbours of cell {" + room.Name + "} with invalid coordinate!");
             return neighbours;
         }
 
-        var adjacentCoordinates = cell.gridCoordinate.GetAdjacentCoordinates();
+        var adjacentCoordinates = room.coordinate.GetAdjacentCoordinates();
         foreach (Coordinate adjacentCoordinate in adjacentCoordinates)
         {
-            if (!Coordinate.IsValidCoordinate(adjacentCoordinate, size))
+            if (!Coordinate.IsValidCoordinate(adjacentCoordinate, n))
             {
                 continue;
             }
 
-            Cell neighbour = cells[CoordinateToIndex(adjacentCoordinate)];
+            Room neighbour = rooms[CoordinateToIndex(adjacentCoordinate)];
 
             if (!onlyGeneratedNeighbours)
             {
                 neighbours.Add(neighbour);
             }
 
-            if (neighbour.isGenerated)
+            if (neighbour.IsGenerated())
             {
                 neighbours.Add(neighbour);
             }
@@ -90,6 +85,6 @@ class Grid
 
     public bool IsEmpty()
     {
-        return cells.Count == 0;
+        return rooms.Count == 0;
     }
 }

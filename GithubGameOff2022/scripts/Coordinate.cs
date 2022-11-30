@@ -4,10 +4,22 @@ public class Coordinate
     public int x;
     public int y;
 
+    public Coordinate()
+    {
+        this.x = 0;
+        this.y = 0;
+    }
+
     public Coordinate(int x, int y)
     {
         this.x = x;
         this.y = y;
+    }
+
+    public Coordinate(Coordinate other)
+    {
+        this.x = other.x;
+        this.y = other.y;
     }
 
     public override string ToString()
@@ -83,6 +95,9 @@ public class Coordinate
         return (x, y).GetHashCode();
     }
 
+    /**
+    Defines operation: Coordinate * multiplier, where multiplier is integer value.
+    */
     public static Coordinate operator *(Coordinate coordinate, int multiplier)
         => new Coordinate(coordinate.x * multiplier, coordinate.y * multiplier);
 }
