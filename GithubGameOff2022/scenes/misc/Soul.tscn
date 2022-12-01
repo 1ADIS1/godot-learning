@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://art/soul.png" type="Texture" id=1]
+[ext_resource path="res://scripts/Soul.cs" type="Script" id=2]
 
 [sub_resource type="Animation" id=1]
 length = 0.001
@@ -52,6 +53,7 @@ radius = 9.02466
 
 [node name="Soul" type="Sprite"]
 texture = ExtResource( 1 )
+script = ExtResource( 2 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/RESET = SubResource( 1 )
@@ -59,7 +61,10 @@ anims/idle = SubResource( 2 )
 
 [node name="Area2D" type="Area2D" parent="."]
 collision_layer = 16
-collision_mask = 0
+collision_mask = 16
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource( 3 )
+
+[connection signal="area_entered" from="Area2D" to="." method="_on_Area2D_area_entered"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]

@@ -14,6 +14,7 @@ public class Player : KinematicBody2D
 	float reloadingTimeLeft = 0;
 
 	private AnimationPlayer _animationPlayer;
+	public int score = 0;
 
 	public override void _Ready()
 	{

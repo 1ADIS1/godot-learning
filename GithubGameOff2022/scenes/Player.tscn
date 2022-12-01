@@ -93,11 +93,12 @@ radius = 2.7
 height = 14.36
 
 [node name="Player" type="KinematicBody2D"]
-collision_layer = 9
-collision_mask = 9
+collision_layer = 25
+collision_mask = 25
 script = ExtResource( 2 )
 Speed = 69.0
 secondsOfImmortalityAfterHit = 1.0
+secondsOfReloadAfterShot = 1.0
 Health = 3
 bullet = ExtResource( 3 )
 

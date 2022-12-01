@@ -7,7 +7,7 @@ public class Walker : KinematicBody2D
 	[Export] public int Health;
 	[Export] public int Damage;
 	[Export] public float Speed;
-
+	[Export] public PackedScene soulPrefab;
 	private bool isPlayerInTheRoom = false;
 
 	public void InitializeEnemy(bool isPlayerInTheRoom)
@@ -31,6 +31,9 @@ public class Walker : KinematicBody2D
 		Health--;
 		if (Health <= 0){
 			room.EnemyDefeated(this);
+			var soulInstance = soulPrefab.Instance() as Node2D;
+			soulInstance.GlobalPosition = GlobalPosition;
+			GetNode("/root/Main").AddChild(soulInstance);
 			QueueFree();
 		}
 	}

@@ -25,6 +25,7 @@ public class Room : Node2D
 		}
 	public void PlayerWalksIn(Player player){
 		isClosedOff = enemies.Count != 0;
+		(GetNode("/root/Main/AudioStreamPlayer") as BackgroundPlayer).PlayMusicForType((RoomType)IntRoomType);
 	}
 	public void EnemyDefeated(Walker enemy){
 		enemies.Remove(enemy);
