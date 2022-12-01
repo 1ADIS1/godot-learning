@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=2]
+[gd_scene load_steps=30 format=2]
 
 [ext_resource path="res://scripts/RoomTemplates.cs" type="Script" id=1]
 [ext_resource path="res://scenes/rooms/default/four_entrances/D_TRBL.tscn" type="PackedScene" id=2]
@@ -24,10 +24,15 @@
 [ext_resource path="res://scenes/rooms/default/three_entrances/D_RBL.tscn" type="PackedScene" id=22]
 [ext_resource path="res://scenes/rooms/default/three_entrances/D_TBL.tscn" type="PackedScene" id=23]
 [ext_resource path="res://scenes/rooms/secret/S_TR.tscn" type="PackedScene" id=24]
+[ext_resource path="res://scenes/rooms/secret/S_RB.tscn" type="PackedScene" id=25]
+[ext_resource path="res://scenes/rooms/secret/S_TB.tscn" type="PackedScene" id=26]
+[ext_resource path="res://scenes/rooms/secret/S_TL.tscn" type="PackedScene" id=27]
+[ext_resource path="res://scenes/rooms/secret/S_RL.tscn" type="PackedScene" id=28]
+[ext_resource path="res://scenes/rooms/secret/S_BL.tscn" type="PackedScene" id=29]
 
 [node name="RoomTemplates" type="Node"]
 script = ExtResource( 1 )
 DefaultRooms = [ ExtResource( 2 ), ExtResource( 5 ), ExtResource( 11 ), ExtResource( 9 ), ExtResource( 10 ), ExtResource( 13 ), ExtResource( 22 ), ExtResource( 23 ), ExtResource( 20 ), ExtResource( 21 ), ExtResource( 12 ), ExtResource( 7 ), ExtResource( 8 ), ExtResource( 14 ), ExtResource( 15 ), ExtResource( 16 ) ]
-SecretRooms = [ ExtResource( 3 ), ExtResource( 24 ) ]
+SecretRooms = [ ExtResource( 29 ), ExtResource( 25 ), ExtResource( 28 ), ExtResource( 26 ), ExtResource( 27 ), ExtResource( 24 ), ExtResource( 3 ) ]
 BossRooms = [ ExtResource( 4 ) ]
 ShopRooms = [ ExtResource( 17 ), ExtResource( 18 ), ExtResource( 19 ), ExtResource( 6 ) ]
