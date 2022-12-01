@@ -29,11 +29,6 @@ public static class Utils
         return number;
     }
 
-    // public static bool BitMaskIndexFormatCheck(int bitmask, int index)
-    // {
-    //     return index >= 0 && index < bitmask && bitmask > 0;
-    // }
-
     /**
     Takes integer in the interval from [0, 100].
     

@@ -69,7 +69,6 @@ public class Main : Node
         // _map.rooms[_map.CoordinateToIndex(farthestRoom.GridCell.gridCoordinate)].AddChild(_roomTemplates.BossCell.Instance<Sprite>());
         // farthestRoom.IntRoomType = (int)RoomType.BOSS;
 
-        // TODO: refactor.
         // Generate secret rooms with neigbour more than two.
         // TODO: fix secret room generating adjacent to another secret room.
         // TODO: fix secret room generating adjacent to boss room.
@@ -129,6 +128,7 @@ public class Main : Node
         {
             GD.Print(room.ToString());
         }
+        GD.Print("Number of rooms in grid is ", _map.rooms.Count);
         GD.Print("\n-------------------------------------------------------------------\n");
     }
 
@@ -176,6 +176,10 @@ public class Main : Node
 
         // TODO: should I delete roomToReplace from scene?
         var roomToReplace = _map.rooms[roomIndex];
+        GD.Print("#####");
+        GD.Print("Replacing room: " + roomToReplace.ToString());
+        GD.Print("With room: ", room.ToString());
+        GD.Print("#####");
 
         room.Name = roomToReplace.Name;
         room.GlobalPosition = GetRoomWorldCoordinates(roomToReplace.coordinate);
@@ -196,8 +200,7 @@ public class Main : Node
 
         _map.rooms[roomIndex] = room;
 
-        GD.PushWarning("Trying to add " + room.ToString() + " on coordinate " + coordinate.ToString());
-        AddChild(room);
+        AddChild(room.Duplicate());
     }
 
     // Replaces middle room in the grid with starting room and fills in starting room index;
