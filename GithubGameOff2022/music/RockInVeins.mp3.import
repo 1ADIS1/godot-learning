@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/RockInVeins.mp3-0c76cc4fbe049dae02c49e175cb75497.mp3str"
+
+[deps]
+
+source_file="res://music/RockInVeins.mp3"
+dest_files=[ "res://.import/RockInVeins.mp3-0c76cc4fbe049dae02c49e175cb75497.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0
