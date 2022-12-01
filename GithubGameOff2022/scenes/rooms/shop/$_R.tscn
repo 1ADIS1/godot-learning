@@ -4,15 +4,16 @@
 [ext_resource path="res://scenes/rooms/ShopRoomBase.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scripts/Room.cs" type="Script" id=3]
 
-[node name="$_T" type="Node2D"]
+[node name="$_R" type="Node2D"]
 script = ExtResource( 3 )
 IntRoomType = 3
-Entrances = 1
+Entrances = 2
 
 [node name="ShopRoomBase" parent="." instance=ExtResource( 2 )]
 
-[node name="TopDoor" parent="." instance=ExtResource( 1 )]
-position = Vector2( 144, 16 )
+[node name="RightDoor" parent="." instance=ExtResource( 1 )]
+position = Vector2( 272, 96 )
+rotation = 1.5708
 
 [node name="Polygon2D" type="Line2D" parent="."]
 position = Vector2( -128, -96 )

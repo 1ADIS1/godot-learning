@@ -180,11 +180,10 @@ public class Main : Node
         room.Name = roomToReplace.Name;
         room.GlobalPosition = GetRoomWorldCoordinates(roomToReplace.coordinate);
 
-        _map.rooms[roomIndex] = room;
-
         // Increment generated neighbour count of adjacent rooms.
         // For every generated neighbour, increment this room's neighbour counter.
         var neighbours = _map.GetNeighbours(room, true);
+        room.generatedNeighbourCount = 0;
         if (neighbours != null)
         {
             foreach (Room neighbour in neighbours)
@@ -195,10 +194,9 @@ public class Main : Node
         }
         _currentRoomsNumber++;
 
-        if (roomToReplace.IsGenerated())
-        {
+        _map.rooms[roomIndex] = room;
 
-        }
+        GD.PushWarning("Trying to add " + room.ToString() + " on coordinate " + coordinate.ToString());
         AddChild(room);
     }
 
@@ -242,6 +240,7 @@ public class Main : Node
         }
         else if (!room.HasEntrances())
         {
+            GD.PushError(GetClass() + ": room does not have entrances!");
             return;
         }
 
@@ -264,12 +263,14 @@ public class Main : Node
             // Check if entrance exists.
             if (Utils.IsBitEnabled(room.Entrances, index))
             {
-                // Choose a random room with desired entrance.
-                List<Room> roomsWithEntranceToIndex = possibleRooms.GetRoomsWithEntranceTo(index);
-                if (roomsWithEntranceToIndex.Count == 0)
+                // Choose a random room with entrance opposite of the current one.
+                List<Room> roomsWithEntranceToIndex = Room.GetRoomsThatHasEntranceTo(index,
+                    possibleRooms.roomsByEntrances[Room.GetOppositeEntranceIndexOf(index)]);
+
+                if (roomsWithEntranceToIndex == null || roomsWithEntranceToIndex.Count == 0)
                 {
-                    GD.PushError(GetClass() + ": Failed to find rooms with entrances to entrance index" + index);
-                    return;
+                    GD.PushError(GetClass() + ": Failed to find rooms with entrances to entrance " + Room.MapEntrancesToName(index));
+                    continue;
                 }
                 roomToPlace = roomsWithEntranceToIndex[random.Next(roomsWithEntranceToIndex.Count)];
                 coordinateToPlace = adjacentCoordinates[index];
@@ -293,11 +294,17 @@ public class Main : Node
             // If chosen coordinate is on the edge - replace chosen room with special one.
             if (Coordinate.CheckIfEdge(coordinateToPlace, GridSize))
             {
+                GD.Print("Coordinate ", coordinateToPlace.ToString(), " is edge!");
                 // Get special rooms with entrance to the passed entrance.
+                if (_roomTemplates.specialRooms == null || _roomTemplates.specialRooms.Count == 0)
+                {
+                    GD.PushError(GetClass() + ": special rooms list is empty or null!");
+                    continue;
+                }
                 List<Room> viableEntranceSpecialRooms = Room.GetRoomsThatHasEntranceTo(index, _roomTemplates.specialRooms);
                 if (viableEntranceSpecialRooms == null || viableEntranceSpecialRooms.Count == 0)
                 {
-                    GD.PushError(GetClass() + ": couldn't find special rooms with entrance to index " + index);
+                    GD.PushError(GetClass() + ": couldn't find special rooms with entrance to " + Room.MapEntrancesToName(index));
                     continue;
                 }
                 roomToPlace = viableEntranceSpecialRooms[random.Next(viableEntranceSpecialRooms.Count)];
@@ -312,7 +319,6 @@ public class Main : Node
                 continue;
             }
 
-            // Otherwise, mark the neighbour cell as having a room in it, and add it to the queue.
             SetRoom(roomToPlace, coordinateToPlace);
             GenerateNeighbours(roomToPlace);
         }

@@ -41,28 +41,4 @@ public class RoomsData
             }
         }
     }
-
-    // Gets index of room entrance, i.e. 0 - top, 1 - right, 2 - bottom, 3 - left
-    // And returns corresponding rooms with entrance to the opposite side of this entrance. 
-    // TODO: replace switch with formula for mapping (0, 1, 2, 3) -> (2, 3, 0, 1)
-    public List<Room> GetRoomsWithEntranceTo(int entranceIndex)
-    {
-        List<Room> roomsWithEntranceTo = new List<Room>();
-        switch (entranceIndex)
-        {
-            case 0:
-                roomsWithEntranceTo = roomsByEntrances[2];
-                break;
-            case 1:
-                roomsWithEntranceTo = roomsByEntrances[3];
-                break;
-            case 2:
-                roomsWithEntranceTo = roomsByEntrances[0];
-                break;
-            case 3:
-                roomsWithEntranceTo = roomsByEntrances[1];
-                break;
-        }
-        return roomsWithEntranceTo;
-    }
 }

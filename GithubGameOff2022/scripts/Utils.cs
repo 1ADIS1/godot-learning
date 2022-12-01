@@ -14,10 +14,11 @@ public static class Utils
         return bitMask | (1 << index);
     }
 
+    // TODO: define length of bitmask
     public static int CountEnabledBits(int bitmask)
     {
         int number = 0;
-        for (int index = 0; index < bitmask.ToString().Length; index++)
+        for (int index = 0; index < 4; index++)
         {
             if (IsBitEnabled(bitmask, index))
             {
@@ -28,10 +29,10 @@ public static class Utils
         return number;
     }
 
-    public static bool BitMaskIndexFormatCheck(int bitmask, int index)
-    {
-        return index >= 0 && index < bitmask && bitmask > 0;
-    }
+    // public static bool BitMaskIndexFormatCheck(int bitmask, int index)
+    // {
+    //     return index >= 0 && index < bitmask && bitmask > 0;
+    // }
 
     /**
     Takes integer in the interval from [0, 100].

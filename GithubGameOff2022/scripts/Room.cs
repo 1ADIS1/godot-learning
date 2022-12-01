@@ -35,16 +35,34 @@ public class Room : Node2D
         return Entrances > 0;
     }
 
-    // Returns true if this room has entrance to the given direction.
-    // Where 0 is top and 3 is left.
+    // Example: returns top entrance (1) if the given index is bottom entrance (2).
+    // (0, 1, 2, 3) -> (2, 3, 0, 1)
+    public static int GetOppositeEntranceIndexOf(int index)
+    {
+        switch (index)
+        {
+            case 0:
+                return 2;
+            case 1:
+                return 3;
+            case 2:
+                return 0;
+            case 3:
+                return 1;
+            default:
+                return -1;
+        }
+    }
+
     public bool HasEntranceTo(int index)
     {
-        if (!Utils.BitMaskIndexFormatCheck(Entrances, index))
+        int oppositeIndex = GetOppositeEntranceIndexOf(index);
+        if (oppositeIndex == -1)
         {
-            GD.PushError(GetClass() + ": passed wrong index format | " + index);
+            GD.PushError("Passed wrong entrance index" + index + " to HasEntranceTo!");
             return false;
         }
-        return Utils.IsBitEnabled(Entrances, index);
+        return Utils.IsBitEnabled(Entrances, oppositeIndex);
     }
 
     public static List<Room> GetRoomsThatHasEntranceTo(int index, List<Room> searchSpace)
@@ -58,13 +76,6 @@ public class Room : Node2D
         List<Room> desiredRooms = new List<Room>();
         foreach (Room room in searchSpace)
         {
-            if (!Utils.BitMaskIndexFormatCheck(room.Entrances, index))
-            {
-                GD.PushError("Room has wrong entrance format in GetRoomsThatHasEntranceTo | "
-                    + index + " | " + room.Entrances);
-                return null;
-            }
-
             if (!room.HasEntranceTo(index))
             {
                 continue;
@@ -129,7 +140,7 @@ public class Room : Node2D
     {
         String output = "";
         output += "Room type: " + (RoomType)IntRoomType;
-        output += ", Entrances: " + Entrances;
+        output += ", Entrances: " + MapEntrancesToName(Entrances);
         output += ", Coordinate: " + coordinate.ToString();
         output += ", Neighbours: " + generatedNeighbourCount;
         return output;

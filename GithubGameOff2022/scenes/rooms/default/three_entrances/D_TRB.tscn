@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://scenes/doors/Door.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/rooms/RoomBase.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scripts/Room.cs" type="Script" id=3]
+
+[node name="D_TRB" type="Node2D"]
+script = ExtResource( 3 )
+IntRoomType = 0
+Entrances = 7
+
+[node name="RoomBase" parent="." instance=ExtResource( 2 )]
+
+[node name="TopDoor" parent="." instance=ExtResource( 1 )]
+position = Vector2( 144, 16 )
+
+[node name="RightDoor" parent="." instance=ExtResource( 1 )]
+position = Vector2( 272, 96 )
+rotation = 1.5708
+
+[node name="BottomDoor2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 144, 176 )
+rotation = -3.14159

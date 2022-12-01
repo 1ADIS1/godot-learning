@@ -16,11 +16,12 @@ class Grid
 
         rooms = new List<Room>(n * n);
 
-        for (int column = 0; column < n; column++)
+        for (int row = 0; row < n; row++)
         {
-            for (int row = 0; row < n; row++)
+            for (int column = 0; column < n; column++)
             {
-                Coordinate coordinate = new Coordinate(row, column);
+                // In Godot, x represents column and y represents row.
+                Coordinate coordinate = new Coordinate(column, row);
 
                 Room room = new Room(coordinate);
                 room.Name = coordinate.x.ToString() + coordinate.y.ToString();
@@ -30,13 +31,11 @@ class Grid
         }
     }
 
-    // TODO: check correctness of calculations.
     public int CoordinateToIndex(Coordinate coordinate)
     {
         return coordinate.x + coordinate.y * n;
     }
 
-    // TODO: check correctness of calculations.
     // TODO: If grid is not squared, then the calculations might be wrong.
     public Coordinate IndexToCoordinate(int index)
     {
@@ -69,12 +68,7 @@ class Grid
 
             Room neighbour = rooms[CoordinateToIndex(adjacentCoordinate)];
 
-            if (!onlyGeneratedNeighbours)
-            {
-                neighbours.Add(neighbour);
-            }
-
-            if (neighbour.IsGenerated())
+            if (!onlyGeneratedNeighbours || onlyGeneratedNeighbours && neighbour.IsGenerated())
             {
                 neighbours.Add(neighbour);
             }

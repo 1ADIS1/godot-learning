@@ -54,18 +54,25 @@ public class RoomTemplates : Node
             return null;
         }
         List<Room> specialRooms = new List<Room>();
+
         List<RoomsData> searchSpace = new List<RoomsData>();
         searchSpace.Add(roomsDatas[(int)RoomType.DEFAULT]);
         searchSpace.Add(roomsDatas[(int)RoomType.SHOP]);
 
-        foreach (Room room in specialRooms)
+        foreach (RoomsData roomsData in searchSpace)
         {
-            // If this is a dead-end room.
-            if (Utils.CountEnabledBits(room.Entrances) != 1)
+            foreach (List<Room> roomsByEntrance in roomsData.roomsByEntrances)
             {
-                continue;
+                foreach (Room room in roomsByEntrance)
+                {
+                    // If this is not a dead-end room.
+                    if (Utils.CountEnabledBits(room.Entrances) != 1)
+                    {
+                        continue;
+                    }
+                    specialRooms.Add(room);
+                }
             }
-            specialRooms.Add(room);
         }
         return specialRooms;
     }

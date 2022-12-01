@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://scenes/doors/Door.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/rooms/RoomBase.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scripts/Room.cs" type="Script" id=3]
+
+[node name="D_L" type="Node2D"]
+script = ExtResource( 3 )
+IntRoomType = 0
+Entrances = 8
+
+[node name="RoomBase" parent="." instance=ExtResource( 2 )]
+
+[node name="LeftDoor" parent="." instance=ExtResource( 1 )]
+position = Vector2( 16, 96 )
+rotation = -1.5708
