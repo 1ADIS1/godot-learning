@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://art/props/secret_room_props.png" type="Texture" id=1]
+[ext_resource path="res://art/soul.png" type="Texture" id=2]
+[ext_resource path="res://scenes/misc/Soul.tscn" type="PackedScene" id=3]
+
+[node name="SecretRoomProps" type="Sprite"]
+position = Vector2( 144, 80 )
+texture = ExtResource( 1 )
+hframes = 5
+frame = 2
+
+[node name="Soul" type="Sprite" parent="." instance=ExtResource( 3 )]
+position = Vector2( 0, 16 )
+texture = ExtResource( 2 )
