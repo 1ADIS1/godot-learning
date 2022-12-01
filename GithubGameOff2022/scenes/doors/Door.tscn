@@ -15,16 +15,22 @@ __meta__ = {
 }
 
 [node name="EnterZone" type="Area2D" parent="."]
+position = Vector2( 0, 6 )
+collision_layer = 8
+collision_mask = 8
 
 [node name="DoorArea" type="CollisionShape2D" parent="EnterZone"]
 position = Vector2( -2, 0 )
 shape = SubResource( 1 )
 
 [node name="MainCollision" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 0
 
 [node name="DoorCollision" type="CollisionPolygon2D" parent="MainCollision"]
 position = Vector2( -8.88929, 16.9937 )
 scale = Vector2( 0.270089, 0.215625 )
-polygon = PoolVector2Array( -11.5174, -4.60869, -37.4347, -41.7101, -37.4347, -64.8985, -18.9223, -88.087, 84.7471, -88.087, 103.26, -64.8985, 103.26, -41.7101, 77.3421, -4.60869, 58.8298, -4.60869, 73.6397, -37.0725, 84.7471, -55.6232, 72.8685, -69.5362, -4.1124, -69.5362, -22.6248, -55.6232, -15.2198, -50.9855, 6.99504, -4.60869 )
+polygon = PoolVector2Array( -33.7323, -4.60847, -37.4347, -41.7101, -37.4347, -64.8985, -18.9223, -88.087, 84.7471, -88.087, 103.26, -64.8985, 103.26, -41.7101, 103.26, -4.60847, 84.7472, -4.60847, 84.7472, -32.4346, 84.7471, -55.6232, 72.8685, -69.5362, -4.1124, -69.5362, -22.6248, -55.6232, -15.2198, -50.9855, -15.2198, -4.60847 )
 
 [connection signal="area_entered" from="EnterZone" to="." method="_on_EnterZone_area_entered"]
+[connection signal="body_entered" from="EnterZone" to="." method="_on_EnterZone_body_entered"]

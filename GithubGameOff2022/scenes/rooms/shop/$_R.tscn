@@ -20,3 +20,14 @@ position = Vector2( -128, -96 )
 scale = Vector2( 2.57592, 1.9892 )
 points = PoolVector2Array( 96, 112, 96, 112, 112, 112, 112, 96, 96, 96, 96, 80, 112, 80 )
 width = 5.488
+
+[node name="TopDoor" parent="." instance=ExtResource( 1 )]
+position = Vector2( 144, 16 )
+
+[node name="BottomDoor2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 144, 176 )
+rotation = -3.14159
+
+[node name="LeftDoor" parent="." instance=ExtResource( 1 )]
+position = Vector2( 16, 96 )
+rotation = -1.5708

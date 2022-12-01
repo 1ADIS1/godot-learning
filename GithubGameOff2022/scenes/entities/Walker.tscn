@@ -6,7 +6,10 @@
 radius = 6.0
 
 [node name="Walker" type="KinematicBody2D"]
+collision_layer = 4
+collision_mask = 4
 script = ExtResource( 1 )
+Speed = 20.0
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
 scale = Vector2( 0.5, 0.5 )

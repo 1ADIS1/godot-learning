@@ -14,3 +14,14 @@ Entrances = 4
 [node name="BottomDoor2" parent="." instance=ExtResource( 1 )]
 position = Vector2( 144, 176 )
 rotation = -3.14159
+
+[node name="TopDoor" parent="." instance=ExtResource( 1 )]
+position = Vector2( 144, 16 )
+
+[node name="RightDoor" parent="." instance=ExtResource( 1 )]
+position = Vector2( 272, 96 )
+rotation = 1.5708
+
+[node name="LeftDoor" parent="." instance=ExtResource( 1 )]
+position = Vector2( 16, 96 )
+rotation = -1.5708
