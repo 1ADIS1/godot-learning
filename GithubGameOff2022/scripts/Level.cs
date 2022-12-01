@@ -1,6 +1,0 @@
-using Godot;
-
-class Level
-{
-
-}

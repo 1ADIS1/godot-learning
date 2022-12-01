@@ -15,6 +15,7 @@ public class Main : Node
     // Offset for spawning rooms in the world coordinates.
     [Export] public int RoomOffsetX = 300;
     [Export] public int RoomOffsetY = 200;
+    [Export] public Vector2 roomCenterOffset = new Vector2(144f, 96f);
 
     // TODO: Sufficient number of rooms to generate.
     [Export] public int ExpectedRoomsNumber = 16;
@@ -96,9 +97,10 @@ public class Main : Node
 
         EmitSignal(nameof(RoomsReady), _map.rooms);
 
-        // PositionPlayerAndCamera();
+        PositionPlayerAndCamera();
     }
 
+    // TODO: refactor.
     /**
     returns the distance between the given room and the furthest room.
     */
@@ -144,24 +146,21 @@ public class Main : Node
         }
     }
 
-    // private void PositionPlayerAndCamera()
-    // {
-    //     GD.Print("Centering the player and camera...");
+    private void PositionPlayerAndCamera()
+    {
+        GD.Print("Centering the player and camera...");
 
-    //     Camera2D camera = GetNodeOrNull<Camera2D>("Camera2D");
-    //     if (camera == null)
-    //     {
-    //         GD.PushError("Camera cannot be found!");
-    //         return;
-    //     }
+        Camera2D camera = GetNodeOrNull<Camera2D>("Camera2D");
+        if (camera == null)
+        {
+            GD.PushError("Camera cannot be found!");
+            return;
+        }
 
-    //     Player player = GetNode<Player>("Player");
-    //     RoomGenerator roomGenerator = GetNode<RoomGenerator>("RoomGenerator");
-    //     Coordinate startingCellCoordinates = _map.rooms[_startingRoomIndex].gridCoordinate;
-
-    //     player.GlobalPosition = roomGenerator.GetRoomWorldCoordinates(startingCellCoordinates) + roomGenerator.roomCenterOffset;
-    //     camera.GlobalPosition = player.GlobalPosition;
-    // }
+        Player player = GetNode<Player>("Player");
+        player.GlobalPosition = _map.rooms[_startingRoomIndex].GlobalPosition + roomCenterOffset;
+        camera.GlobalPosition = player.GlobalPosition;
+    }
 
     private void SetRoom(Room room, Coordinate coordinate)
     {

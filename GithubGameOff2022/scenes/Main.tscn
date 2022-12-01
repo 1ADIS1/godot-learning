@@ -11,11 +11,12 @@ StartingRoomScene = ExtResource( 3 )
 
 [node name="RoomTemplates" parent="." instance=ExtResource( 2 )]
 
+[node name="Player" parent="." instance=ExtResource( 6 )]
+position = Vector2( 144, 96 )
+z_index = 1
+Speed = 77.0
+
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( 336, 192 )
 current = true
-zoom = Vector2( 5, 5 )
-
-[node name="Player" parent="." instance=ExtResource( 6 )]
-position = Vector2( 144, 96 )
-Speed = 77.0
+zoom = Vector2( 4, 4 )
