@@ -1,0 +1,59 @@
+[gd_scene load_steps=9 format=3 uid="uid://drljdbu5i6x0a"]
+
+[ext_resource type="Script" path="res://scripts/Furnace.cs" id="1_wb2n7"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_m47w0"]
+size = Vector3(0.29, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yuhvs"]
+albedo_color = Color(0.0588235, 0.196078, 0.12549, 1)
+metallic = 0.74
+metallic_specular = 0.56
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ibmco"]
+size = Vector3(0.289597, 1, 1)
+
+[sub_resource type="Gradient" id="Gradient_amcip"]
+offsets = PackedFloat32Array(0, 0.429967, 0.778502, 1)
+colors = PackedColorArray(0.905882, 0.0666667, 0, 1, 0.893831, 0.423463, 0, 1, 0.926909, 0.835754, 0.445905, 1, 0.972638, 0.886378, 0.637803, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_nn4sr"]
+gradient = SubResource("Gradient_amcip")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f062m"]
+albedo_texture = SubResource("GradientTexture1D_nn4sr")
+emission_enabled = true
+emission = Color(0.803922, 0.490196, 0.258824, 1)
+emission_energy_multiplier = 1.5
+
+[sub_resource type="BoxMesh" id="BoxMesh_dm6y2"]
+material = SubResource("StandardMaterial3D_f062m")
+size = Vector3(0.01, 0.01, 0.01)
+
+[node name="Furnace" type="StaticBody3D" node_paths=PackedStringArray("player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.41168, 0.825736, -0.0236598)
+script = ExtResource("1_wb2n7")
+player = NodePath("../Player")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_m47w0")
+surface_material_override/0 = SubResource("StandardMaterial3D_yuhvs")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_ibmco")
+
+[node name="CPUParticles3D" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.065304, -0.0790935, 0)
+amount = 75
+lifetime = 0.81
+speed_scale = 0.3
+mesh = SubResource("BoxMesh_dm6y2")
+emission_shape = 3
+emission_box_extents = Vector3(0, 0.476, 0.409)
+direction = Vector3(1, 0.723, 0)
+spread = 0.0
+gravity = Vector3(1.769, 4.033, 0)
+initial_velocity_min = 5.0
+initial_velocity_max = 5.0
+scale_amount_min = 0.26
+scale_amount_max = 1.2

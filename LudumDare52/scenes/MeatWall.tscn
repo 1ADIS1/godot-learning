@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://dcucsg7e45ech"]
+
+[ext_resource type="PackedScene" uid="uid://boeeyumqurufq" path="res://art/MeatWall.gltf" id="1_71so5"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_p1y8t"]
+size = Vector3(6.51275, 2.86148, 0.244115)
+
+[node name="StaticBody3D" type="StaticBody3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.21407, 1.20899, 0.430224)
+shape = SubResource("BoxShape3D_p1y8t")
+
+[node name="MeatWall" parent="." instance=ExtResource("1_71so5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.00375, 0, -0.833695)

@@ -16,8 +16,10 @@ config/icon="res://icon.png"
 
 [display]
 
+window/size/width=720
 window/size/height=720
 window/size/resizable=false
+window/size/fullscreen=true
 window/size/test_width=1024
 window/size/test_height=720
 

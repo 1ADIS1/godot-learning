@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://cvco0kkn0nsg1"]
+
+[ext_resource type="PackedScene" uid="uid://bjn00mdonl4b3" path="res://art/DoorWay.gltf" id="1_k0qng"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_t8jd7"]
+size = Vector3(0.75566, 2.44306, 0.350995)
+
+[node name="StaticBody3D" type="StaticBody3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.87598, 1.22202, 0)
+shape = SubResource("BoxShape3D_t8jd7")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.874611, 1.22202, 0)
+shape = SubResource("BoxShape3D_t8jd7")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="."]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, -0.0759029, 2.37421, 0)
+shape = SubResource("BoxShape3D_t8jd7")
+
+[node name="DoorWay" parent="." instance=ExtResource("1_k0qng")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)

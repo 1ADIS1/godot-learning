@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://dh7q3p7l8kpju"]
+
+[ext_resource type="PackedScene" uid="uid://but02f21kihf2" path="res://art/Tiles.gltf" id="1_rb1o6"]
+[ext_resource type="PackedScene" uid="uid://cbr08a6sshtb" path="res://scenes/floor.tscn" id="2_0qfru"]
+
+[node name="Entrance" type="Node3D"]
+
+[node name="Tiles" parent="." instance=ExtResource("1_rb1o6")]
+
+[node name="Floor" parent="." instance=ExtResource("2_0qfru")]

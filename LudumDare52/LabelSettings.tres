@@ -1,0 +1,10 @@
+[gd_resource type="LabelSettings" load_steps=2 format=3 uid="uid://xc6ythdabp07"]
+
+[ext_resource type="FontFile" uid="uid://ri82y13n0gq7" path="res://MyImaginaryFriend-XP99.ttf" id="1_rjp88"]
+
+[resource]
+font = ExtResource("1_rjp88")
+font_size = 29
+font_color = Color(0.262745, 0.0392157, 0.00392157, 1)
+shadow_color = Color(0.545098, 0.25098, 0.2, 0.384314)
+shadow_offset = Vector2(1.156, 2.983)

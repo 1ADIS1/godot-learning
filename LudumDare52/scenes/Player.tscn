@@ -1,0 +1,47 @@
+[gd_scene load_steps=5 format=3 uid="uid://xv12rdxqtyhe"]
+
+[ext_resource type="Script" path="res://scripts/PlayerController.cs" id="1_qfw0b"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ph365"]
+radius = 0.25
+height = 1.7
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_r46y7"]
+size = Vector3(0.35385, 0.174959, 0.33895)
+
+[sub_resource type="BoxMesh" id="BoxMesh_i3b4y"]
+size = Vector3(0.29, 0.29, 0.29)
+
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("CameraPivot", "Camera", "rayCast3D", "meat")]
+script = ExtResource("1_qfw0b")
+MovementSpeed = 5.0
+MaxCameraRotationX = 1.5
+InteractionDistance = 1000.0
+CameraPivot = NodePath("CameraPivot")
+Camera = NodePath("CameraPivot/Camera3D")
+rayCast3D = NodePath("CameraPivot/RayCast3D")
+meat = NodePath("Meat")
+CameraShakeAmount = 1.0
+CameraShakeDuration = 0.4
+
+[node name="Body" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.861368, 0)
+shape = SubResource("CapsuleShape3D_ph365")
+
+[node name="Feet" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.145134, 0)
+shape = SubResource("BoxShape3D_r46y7")
+
+[node name="CameraPivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.36, 0)
+
+[node name="RayCast3D" type="RayCast3D" parent="CameraPivot"]
+exclude_parent = false
+target_position = Vector3(0, 0, -1.6)
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot"]
+current = true
+
+[node name="Meat" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.370798, 1.11404, -0.376969)
+mesh = SubResource("BoxMesh_i3b4y")
